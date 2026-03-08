@@ -5,7 +5,11 @@ A private Claude Code plugin that audits and maintains Claude Code configuration
 ## Installation
 
 ```bash
-claude plugin install cwfo@github.com/andreacanes/Claude-work-flow-optimizer
+# 1. Add the marketplace
+/plugin marketplace add andreacanes/Claude-work-flow-optimizer
+
+# 2. Install the plugin
+/plugin install cwfo@andreacanes-Claude-work-flow-optimizer
 ```
 
 ### Local development
@@ -15,6 +19,8 @@ claude --plugin-dir /path/to/Claude-work-flow-optimizer
 ```
 
 ### Updating
+
+Plugin updates flow through the marketplace. To refresh best-practice reference cache:
 
 ```
 /cwfo:update
@@ -53,7 +59,7 @@ claude --plugin-dir /path/to/Claude-work-flow-optimizer
 
 The plugin references best-practice docs from [shanraisshan/claude-code-best-practice](https://github.com/shanraisshan/claude-code-best-practice). These are fetched and cached at `~/.cache/cwfo/best-practice/` with a 24-hour TTL.
 
-Skills that need reference docs fetch them automatically on first invocation. You can also manually refresh:
+Skills check for cached references and prompt you to run `/cwfo:update` if missing. You can also manually refresh:
 
 ```bash
 bash scripts/update-best-practices.sh
