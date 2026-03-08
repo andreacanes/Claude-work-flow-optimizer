@@ -4,24 +4,20 @@ A private Claude Code plugin that audits and maintains Claude Code configuration
 
 ## Installation
 
-### From private GitHub repo
-
-Requires GitHub authentication via `gh auth login`:
-
 ```bash
-claude plugin install cwfo@github.com/Andrea/Claude-work-flow-optimizer
-```
-
-Or using a personal access token:
-
-```bash
-claude plugin install cwfo@https://<token>@github.com/Andrea/Claude-work-flow-optimizer
+claude plugin install cwfo@github.com/andreacanes/Claude-work-flow-optimizer
 ```
 
 ### Local development
 
 ```bash
 claude --plugin-dir /path/to/Claude-work-flow-optimizer
+```
+
+### Updating
+
+```
+/cwfo:update
 ```
 
 ## Available Skills
@@ -38,6 +34,7 @@ claude --plugin-dir /path/to/Claude-work-flow-optimizer
 | Command | Description |
 |---------|-------------|
 | `/cwfo:session-id` | Show current Claude Code session ID and file path |
+| `/cwfo:update` | Update the plugin to the latest version + refresh best-practice cache |
 
 ## Rules (Always-on)
 
