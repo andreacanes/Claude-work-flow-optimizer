@@ -105,3 +105,7 @@ Follow the generation process instructions from the loaded `generation-process.m
 ## Key Constraint
 
 Err on the side of LESS config. A project is better served by a lean, accurate CLAUDE.md + a few precise rules than by comprehensive but noisy configuration. The maintenance loop (`config-awareness` rule → `config-updater` → `audit`) handles drift going forward. Bootstrap should create the minimum viable config.
+
+## Finish
+
+After all config is generated and validated, list the created files and ask once: "Commit these config changes?" — then stop.

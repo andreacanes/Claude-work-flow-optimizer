@@ -61,6 +61,8 @@ allowed-tools:
 mkdir -p .claude && git rev-parse HEAD > .claude/.cwfo-last-update
 ```
 
+7. List the modified config files and ask once: "Commit these config changes?" — then stop.
+
 ## Decision Framework — Where to Put Things
 
 Ask in this order:
