@@ -1,5 +1,5 @@
 ---
-name: plan-review
+name: review
 description: >
   Interactive plan review protocol. Use when the user says "review this plan",
   "check my plan", "plan review", or after completing a plan in .claude/plans/.

@@ -1,5 +1,5 @@
 ---
-name: project-bootstrapper
+name: bootstrap
 description: >
   Generate initial Claude Code config for a project from scratch.
   Use when the user says "bootstrap", "initialize claude config",
@@ -35,7 +35,7 @@ ls .cursor/rules/ 2>/dev/null
 ls .windsurfrules 2>/dev/null
 ```
 
-- If `.claude/` has rules, skills, or agents already → tell the user this project already has config and suggest `/cwfo:claude-config-gap-analysis` (for deep analysis) or `/cwfo:config-updater` (for incremental updates) instead. **Stop here.**
+- If `.claude/` has rules, skills, or agents already → tell the user this project already has config and suggest `/cwfo:gap-analysis` (for deep analysis) or `/cwfo:updater` (for incremental updates) instead. **Stop here.**
 - If a root `CLAUDE.md` already exists (but no `.claude/` directory) → warn the user: "This project has an existing CLAUDE.md but no `.claude/` config directory. Bootstrap will preserve the existing CLAUDE.md and build `.claude/` config around it. Proceed?" Wait for confirmation.
 - If `.cursor/rules/` or `.windsurfrules` exist → note: "Found existing AI-tool config. The investigation phase will analyze these for conventions to migrate to Claude Code format."
 - If none of the above exist → proceed with bootstrapping.

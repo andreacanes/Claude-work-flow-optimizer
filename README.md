@@ -24,7 +24,7 @@ CWFO gives you five skills. Here is what each one does and when to use it.
 
 ### 1. Project Bootstrapper
 
-**Invoke:** `/cwfo:project-bootstrapper` or just say "bootstrap my project"
+**Invoke:** `/cwfo:bootstrap` or just say "bootstrap my project"
 
 This is where you start on a new project (or one that has never had proper Claude Code config).
 
@@ -36,7 +36,7 @@ Nothing gets created until you review and approve the plan. Think of it as an on
 
 ### 2. Config Audit
 
-**Invoke:** `/cwfo:claude-config-audit` or just say "audit my config" or "lint"
+**Invoke:** `/cwfo:audit` or just say "audit my config" or "lint"
 
 This is a health check. You run it periodically to make sure your config is still in good shape. It has four modes:
 
@@ -50,7 +50,7 @@ This is a health check. You run it periodically to make sure your config is stil
 
 ### 3. Gap Analysis
 
-**Invoke:** `/cwfo:claude-config-gap-analysis` or just say "run a gap analysis"
+**Invoke:** `/cwfo:gap-analysis` or just say "run a gap analysis"
 
 This is the deep dive. While the audit checks whether your existing config is well-formed, the gap analysis asks a harder question: **does your config actually cover what your project needs?**
 
@@ -65,7 +65,7 @@ If the bootstrapper is your setup wizard, the gap analysis is your six-month che
 
 ### 4. Config Updater
 
-**Invoke:** `/cwfo:config-updater` or say things like:
+**Invoke:** `/cwfo:updater` or say things like:
 - "save this as a rule"
 - "add this to the config"
 - "make this a convention"
@@ -82,7 +82,7 @@ The updater detects these kinds of drift and proposes specific config changes. I
 
 ### 5. Plan Review
 
-**Invoke:** `/cwfo:plan-review` or just say "review this plan"
+**Invoke:** `/cwfo:review` or just say "review this plan"
 
 When Claude creates implementation plans (stored in `.claude/plans/`), this skill reviews them for architecture issues, code quality concerns, missing tests, and performance problems.
 
@@ -98,7 +98,7 @@ Three pieces of CWFO work together to keep your config healthy over time:
 
 **Config Awareness Rule (always on, passive).** This is a lightweight rule that runs every turn. It costs about 15 tokens and does one thing: when you create new patterns, conventions, or workflows during a session, it nudges you to consider whether your config should be updated. It also catches phrases like "save this as a rule" or "add this to the config" and routes them to the config updater. It never modifies anything on its own.
 
-**Config Updater (auto-triggers or manual).** Activates when you say "save this as a rule", "make this a convention", etc. -- or when you explicitly run `/cwfo:config-updater`. It scans your recent git changes, figures out the right config placement, and proposes fixes. You approve each one. (Note: "remember this" goes to Claude's built-in memory, not CWFO. Use config-specific language like "add this to the rules" to trigger CWFO instead.)
+**Config Updater (auto-triggers or manual).** Activates when you say "save this as a rule", "make this a convention", etc. -- or when you explicitly run `/cwfo:updater`. It scans your recent git changes, figures out the right config placement, and proposes fixes. You approve each one. (Note: "remember this" goes to Claude's built-in memory, not CWFO. Use config-specific language like "add this to the rules" to trigger CWFO instead.)
 
 **Config Audit (you trigger, periodic health check).** Every so often, run an audit to catch structural issues, formatting problems, or deviations from best practices that the updater would not catch.
 

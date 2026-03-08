@@ -1,5 +1,5 @@
 ---
-name: config-updater
+name: updater
 description: >
   Analyze recent code changes and update Claude Code configuration
   (rules, skills, agents, CLAUDE.md) to match. Use this after completing

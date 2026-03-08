@@ -1,5 +1,5 @@
 ---
-name: claude-config-audit
+name: audit
 description: >
   Audit a project's Claude Code architecture — CLAUDE.md, rules, skills, agents, MCPs.
   Use when the user says "audit", "review config", "check my claude setup",

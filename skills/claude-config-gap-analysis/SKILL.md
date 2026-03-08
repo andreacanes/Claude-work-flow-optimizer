@@ -1,5 +1,5 @@
 ---
-name: claude-config-gap-analysis
+name: gap-analysis
 description: >
   Deep gap analysis of Claude Code config vs what the codebase actually needs.
   Use when the user says "gap analysis", "deep audit", "comprehensive review",
