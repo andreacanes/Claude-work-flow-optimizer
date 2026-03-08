@@ -5,9 +5,10 @@ description: >
   (rules, skills, agents, CLAUDE.md) to match. Use this after completing
   a feature, after a refactor, after adding a new domain or framework,
   or whenever the codebase has evolved and config might be stale.
-  Also use when the user says things like "save this pattern",
-  "remember this for next time", "we should always do it this way",
-  "add this to the rules", or "make sure Claude always does this".
+  Also use when the user says things like "save this as a rule",
+  "add this to the config", "make this a convention", "update the rules",
+  "add this to the rules", "make sure Claude always does this",
+  or "we should always do it this way".
 allowed-tools:
   - Read
   - Write
