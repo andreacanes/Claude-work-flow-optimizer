@@ -29,3 +29,18 @@ Use this quick reference to determine where configuration belongs:
 - Each rule body: ~5-10 lines (every line costs tokens on every matched turn)
 - Skill descriptions: 1-2 sentences (loaded into context even when not invoked)
 - Skill body + references: loaded only on invocation, can be longer
+
+## Structural Lint Checklist (Quick Lint Mode)
+
+Used when user says "quick check", "validate config", "lint my config".
+
+| Check | Pass condition |
+|-------|---------------|
+| CLAUDE.md length | `wc -l ./CLAUDE.md` < 200 lines |
+| Rule frontmatter | All `.claude/rules/*.md` files have valid YAML frontmatter |
+| Rule path resolution | Every `paths:` glob matches at least one file |
+| Skill frontmatter | All `.claude/skills/*/SKILL.md` files have valid YAML frontmatter |
+| Skill context resolution | Every `context:` reference resolves to an existing file |
+| Agent skill preloads | Every `skills:` entry maps to an existing `.claude/skills/` directory |
+| Agent tool validity | Every `tools:` entry is a recognized tool name pattern |
+| No duplicate rules | No duplicate filenames in `.claude/rules/` |

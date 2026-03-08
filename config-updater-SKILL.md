@@ -23,6 +23,8 @@ conventions from the rest of the project)
 **New pattern established?**
 → If 3+ files follow the same new convention, that's a rule candidate.
 → Write it as a rule in .claude/rules/ with appropriate path globs.
+→ Before creating the rule, Glob the proposed paths: pattern to verify it resolves to actual files. If zero matches, adjust the glob.
+→ Check existing rules in .claude/rules/ for overlapping path globs or contradictory instructions. If overlap found, propose merging or scoping more narrowly.
 
 **New multi-step workflow discovered?**
 → If you just executed a complex sequence that will recur (adding a new
@@ -34,6 +36,7 @@ of analysis), capture it as a skill in .claude/skills/.
 → If the work involved independent subtasks that could have run
 simultaneously, consider whether an agent definition would help
 future runs.
+→ When creating an agent, verify: (a) any skills: preloads reference existing skill directories, (b) tools: list is minimal and only includes what the agent needs, (c) the task genuinely benefits from isolation — if not, suggest a skill instead.
 
 **Root CLAUDE.md drift?**
 → Has the tech stack, project structure, or workflow changed in ways

@@ -3,7 +3,8 @@ name: claude-config-audit
 description: >
   Audit a project's Claude Code architecture — CLAUDE.md, rules, skills, agents, MCPs.
   Use when the user says "audit", "review config", "check my claude setup",
-  "is my config correct", or "what's wrong with my claude config".
+  "is my config correct", "what's wrong with my claude config",
+  "quick check", "validate config", "lint my config", or "lint config".
 allowed-tools:
   - Read
   - Glob
@@ -30,7 +31,31 @@ If missing or you want to refresh, fetch them:
 mkdir -p ~/.cache/cwfo/best-practice && for f in claude-memory.md claude-skills.md claude-subagents.md claude-mcp.md claude-commands.md claude-cli-startup-flags.md claude-settings.md; do curl -sS -f -o ~/.cache/cwfo/best-practice/$f "https://raw.githubusercontent.com/shanraisshan/claude-code-best-practice/main/best-practice/$f"; done
 ```
 
-## Audit Process
+## Mode Selection
+
+If the user said "quick check", "validate config", "lint", or similar → run **Quick Lint Mode** below.
+Otherwise → run the **Full Audit Process**.
+
+---
+
+## Quick Lint Mode
+
+Structural validation only. Skips best-practice comparison.
+
+1. **CLAUDE.md line count:** `wc -l ./CLAUDE.md` — flag if > 200 lines.
+2. **Rule frontmatter:** Read every file in `.claude/rules/`. Verify YAML frontmatter parses correctly.
+3. **Rule path resolution:** For each rule with `paths:` globs, verify each glob resolves to at least one file. Flag dead rules (globs that match nothing).
+4. **Skill frontmatter:** Read every `SKILL.md` in `.claude/skills/*/`. Verify YAML frontmatter parses.
+5. **Skill preload resolution:** For each skill with `context:` references, verify the referenced files exist.
+6. **Agent preload resolution:** For each agent with `skills:` entries, verify the referenced skill directories exist under `.claude/skills/`.
+7. **Agent tool validation:** For each agent with `tools:` entries, check that tool names follow valid patterns.
+8. **Duplicate detection:** Check for duplicate rule filenames across `.claude/rules/`.
+
+Report pass/fail for each check. End with a summary of issues found (if any).
+
+---
+
+## Full Audit Process
 
 Review this project's Claude Code architecture and report whether each piece is correctly placed. For each section, read the corresponding best-practice reference file from `~/.cache/cwfo/best-practice/` BEFORE evaluating.
 
@@ -58,6 +83,7 @@ Find all CLAUDE.md files in subdirectories. Evaluate:
 
 Read every rule file. Evaluate:
 - Does each one have appropriate `paths:` globs?
+- Do `paths:` globs resolve to at least one actual file? (Glob each pattern to verify. Flag dead rules.)
 - Are there rules without paths that should just be in CLAUDE.md?
 - Are there instructions in CLAUDE.md that are path-specific and should be rules instead?
 - Are there overlapping or contradictory rules?
@@ -81,8 +107,8 @@ Read every SKILL.md. For each skill:
 Read every agent file. For each agent:
 - Does it need isolation or could this run inline in the main conversation?
 - Is the description clear enough for automatic delegation?
-- Does it preload the right skills via `skills:` frontmatter?
-- Does it have appropriate tool restrictions (not too broad, not too narrow)?
+- Does it preload the right skills via `skills:` frontmatter? Do `skills:` entries map to existing skill directories?
+- Does it have appropriate tool restrictions (not too broad, not too narrow)? Are `tools:` entries valid tool names?
 - Would file-based handoffs between agents work, and are they documented?
 - Is the agent doing work that could be parallelized but isn't, or is parallelized but shouldn't be?
 

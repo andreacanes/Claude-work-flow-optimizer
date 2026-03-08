@@ -24,10 +24,11 @@ claude --plugin-dir /path/to/Claude-work-flow-optimizer
 
 | Skill | Trigger | Description |
 |-------|---------|-------------|
-| `/cwfo:claude-config-audit` | "audit", "review config", "check my claude setup" | Full architecture audit across all 7 config systems |
+| `/cwfo:claude-config-audit` | "audit", "review config", "lint my config" | Full architecture audit or quick structural lint |
 | `/cwfo:claude-config-gap-analysis` | "gap analysis", "deep audit", "comprehensive review" | Deep gap analysis with 4 parallel investigation streams |
 | `/cwfo:config-updater` | "update config", "save this pattern" | Git-aware config drift detector (explicit invocation only) |
 | `/cwfo:plan-review` | "review this plan", "plan review" | Interactive plan review with numbered issues and options |
+| `/cwfo:project-bootstrapper` | "bootstrap", "initialize claude config", "set up claude" | Generate initial Claude Code config from scratch |
 
 ## Available Commands
 
@@ -41,7 +42,7 @@ claude --plugin-dir /path/to/Claude-work-flow-optimizer
 - **config-awareness** — Nudges when you create new patterns that might need config
 - **plan-review** — Auto-triggers review protocol when working in `.claude/plans/`
 
-## Agents (Used by Gap Analysis)
+## Agents (Used by Gap Analysis & Bootstrapper)
 
 - `codebase-mapper` — Scans project structure and tech stack
 - `convention-extractor` — Extracts implicit coding conventions from source
@@ -64,7 +65,7 @@ bash scripts/update-best-practices.sh
 |-----------|---------------|-----------------|
 | config-awareness rule | Yes (all files) | ~15 |
 | plan-review rule | Only on plan files | ~15 when active |
-| Skill descriptions (4) | Yes (descriptions only) | ~25 |
-| **Total always-on** | | **~40** |
+| Skill descriptions (5) | Yes (descriptions only) | ~33 |
+| **Total always-on** | | **~48** |
 
 Everything else loads on-demand only when skills are invoked.
