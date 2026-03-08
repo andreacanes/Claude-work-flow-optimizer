@@ -63,13 +63,16 @@ If the cwfo plugin's `scripts/lint.sh` is available, you can run it for fast det
 Structural validation only. Skips best-practice comparison.
 
 1. **CLAUDE.md line count:** `wc -l ./CLAUDE.md` — flag if > 200 lines.
-2. **Rule frontmatter:** Read every file in `.claude/rules/`. Verify YAML frontmatter parses correctly.
-3. **Rule path resolution:** For each rule with `paths:` globs, verify each glob resolves to at least one file. Flag dead rules (globs that match nothing).
-4. **Skill frontmatter:** Read every `SKILL.md` in `.claude/skills/*/`. Verify YAML frontmatter parses.
-5. **Skill preload resolution:** For each skill with `context:` references, verify the referenced files exist.
-6. **Agent preload resolution:** For each agent with `skills:` entries, verify the referenced skill directories exist under `.claude/skills/`.
-7. **Agent tool validation:** For each agent with `tools:` entries, check that tool names follow valid patterns.
-8. **Duplicate detection:** Check for duplicate rule filenames across `.claude/rules/`.
+2. **Config maintenance:** Check CLAUDE.md has a Config Maintenance section. WARN if missing.
+3. **Rule frontmatter:** Read every file in `.claude/rules/`. Verify YAML frontmatter parses correctly.
+4. **Rule path resolution:** For each rule with `paths:` globs, verify each glob resolves to at least one file. Flag dead rules.
+5. **Rule body length:** Measure body lines (after frontmatter). WARN >15 lines, FAIL >50 lines. Report worst offender and total.
+6. **Always-on rules:** Detect rules without `paths:`. WARN if total always-on body >30 lines.
+7. **Rule overlap:** Map rules to directory buckets. Count overlapping rules per directory. FAIL if >10 overlap. Estimate tokens (~10/line). FAIL >5000, WARN >3000.
+8. **Skill frontmatter:** Read every `SKILL.md` in `.claude/skills/*/`. Verify YAML frontmatter parses.
+9. **Skill preload resolution:** For each skill with `context:` references, verify the referenced files exist.
+10. **Agent preload resolution:** For each agent with `skills:` entries, verify the referenced skill directories exist.
+11. **Duplicate detection:** Check for duplicate rule filenames across `.claude/rules/`.
 
 Use this output format for each check:
 
