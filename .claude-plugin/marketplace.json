@@ -1,12 +1,14 @@
 {
-  "schema_version": "1.0",
   "name": "andreacanes-Claude-work-flow-optimizer",
+  "owner": {
+    "name": "Andrea Canes"
+  },
   "plugins": [
     {
       "name": "cwfo",
       "version": "1.0.0",
       "description": "Claude Work Flow Optimizer — Audit and maintain Claude Code config against best practices",
-      "source": "."
+      "source": "./"
     }
   ]
 }
