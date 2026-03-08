@@ -1,6 +1,5 @@
 ---
-description: Trigger plan review protocol after completing plans
-paths: [".claude/plans/**"]
+description: Offer plan review when a plan is loaded in the conversation
 ---
 
-After completing a plan, read and apply the plan review protocol from `plan-review-protocol.md`. Ask the user: **BIG** (4 issues/section) or **SMALL** (1 issue/section)?
+If you see a "plan file exists from plan mode" system message with plan contents, offer to review it before implementing. Ask: **BIG** (4 issues/section) or **SMALL** (1 issue/section)? Then review sequentially: Architecture → Code Quality → Tests → Performance. Number each issue, letter each option, recommend first. Only offer once per plan.

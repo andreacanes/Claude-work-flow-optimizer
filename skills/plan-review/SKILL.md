@@ -15,13 +15,15 @@ context:
 
 ## Quick Start
 
-If no specific plan file is provided, find the most recent plan:
+Check for plan content in the conversation first — Claude Code loads active plans via system reminders ("A plan file exists from plan mode..."). If plan content is already in context, review that plan directly.
+
+Otherwise, find the most recent plan file:
 
 ```bash
-ls -t .claude/plans/*.md 2>/dev/null | head -1
+ls -t .claude/plans/*.md 2>/dev/null || ls -t ~/.claude/plans/*.md 2>/dev/null | head -1
 ```
 
-If no plans exist in `.claude/plans/`, ask the user which file to review.
+If no plans exist, ask the user which file to review.
 
 ## Before Starting
 

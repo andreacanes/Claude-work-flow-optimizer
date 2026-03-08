@@ -34,14 +34,14 @@ This project IS a plugin — files live at `skills/`, `agents/`, `rules/`, `comm
 
 ## Skill Inventory
 
-- `claude-config-audit` — Audit config (quick lint, full audit, self-check, incremental audit)
-- `claude-config-gap-analysis` — Deep gap analysis: 4-agent investigation + comparison
-- `config-updater` — Detect code changes and propose config updates (explicit invocation only)
-- `plan-review` — Interactive plan review with 4 sections, BIG/SMALL modes
-- `project-bootstrapper` — Generate initial config from scratch: investigate, design, generate
+- `audit` (`/cwfo:audit`) — Audit config (quick lint, full audit, self-check, incremental audit)
+- `gap-analysis` (`/cwfo:gap-analysis`) — Deep gap analysis: 4-agent investigation + comparison
+- `updater` (`/cwfo:updater`) — Detect code changes and propose config updates; auto-triggers on "save this as a rule"
+- `review` (`/cwfo:review`) — Interactive plan review with 4 sections, BIG/SMALL modes
+- `bootstrap` (`/cwfo:bootstrap`) — Generate initial config from scratch: investigate, design, generate
 
 ## Development Notes
 
-- Total always-on context cost: ~48 tokens/turn
+- Total always-on context cost: ~68 tokens/turn
 - `config-updater` uses `.claude/.cwfo-last-update` watermark in target projects
 - Run `bash scripts/lint.sh .` against any project for fast structural validation

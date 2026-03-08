@@ -169,8 +169,8 @@ CWFO is designed to be lightweight when idle. The always-on cost breaks down lik
 | Component | Always loaded? | Estimated tokens/turn |
 |-----------|---------------|----------------------|
 | Config awareness rule | Yes (all files) | ~15 |
-| Plan review rule | Only on plan files | ~15 when active |
+| Plan review rule | Yes (all files) | ~20 |
 | Skill descriptions (5) | Yes (descriptions only) | ~33 |
-| **Total always-on** | | **~48** |
+| **Total always-on** | | **~68** |
 
-Everything else -- the agents, the best-practice references, the full skill logic -- loads on demand only when you invoke a skill. Forty-eight tokens per turn is the standing cost of having CWFO installed.
+Everything else -- the agents, the best-practice references, the full skill logic -- loads on demand only when you invoke a skill. Sixty-eight tokens per turn is the standing cost of having CWFO installed.

@@ -59,7 +59,7 @@ Use the same format as Quick Lint:
 
 ```
 [PASS] Plugin manifest: name, description, version present
-[FAIL] Context path: skills/plan-review/SKILL.md → ../../plan-review-protocol.md not found
+[FAIL] Context path: skills/plan-review/SKILL.md → references/missing-file.md not found
 [WARN] Decision framework: config-updater/SKILL.md omits "scripts" placement option
 ```
 
