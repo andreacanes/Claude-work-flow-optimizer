@@ -65,15 +65,20 @@ If the bootstrapper is your setup wizard, the gap analysis is your six-month che
 
 ### 4. Config Updater
 
-**Invoke:** `/cwfo:config-updater` or just say "update my config"
+**Invoke:** `/cwfo:config-updater` or say things like:
+- "save this as a rule"
+- "add this to the config"
+- "make this a convention"
+- "update the rules"
+- "we should always do it this way"
 
 Code changes. Config should change with it. The config updater looks at your recent git history and figures out whether your Claude Code config has fallen behind.
 
 Maybe you added a new API layer following a specific pattern and there is no rule teaching Claude about it. Maybe you renamed a directory that a skill references. Maybe you adopted a new testing convention three weeks ago and your `CLAUDE.md` still describes the old one.
 
-The updater detects these kinds of drift and proposes specific config changes. You review each proposal and decide what to apply. Nothing changes without your approval.
+The updater detects these kinds of drift and proposes specific config changes. It figures out the right place for each piece of knowledge — `CLAUDE.md` for project-wide truths, a rule for path-specific conventions, a skill for recurring workflows. You review each proposal and decide what to apply. Nothing changes without your approval.
 
-This skill only runs when you explicitly ask for it -- it never activates on its own.
+**Important:** This is different from Claude Code's built-in memory. Saying "remember this" saves to Claude's personal memory (notes to itself). Saying "save this as a rule" triggers CWFO's config updater, which writes to your project's `.claude/` configuration — rules, `CLAUDE.md`, skills — so the knowledge is shared with anyone who works on the project, not just stored in one session.
 
 ### 5. Plan Review
 
@@ -91,9 +96,9 @@ A background rule also watches for plan files, so if Claude creates a plan durin
 
 Three pieces of CWFO work together to keep your config healthy over time:
 
-**Config Awareness Rule (always on, passive).** This is a lightweight rule that runs every turn. It costs about 15 tokens and does one thing: when you create new patterns, conventions, or workflows during a session, it nudges you to consider whether your config should be updated. It never modifies anything -- it just reminds you.
+**Config Awareness Rule (always on, passive).** This is a lightweight rule that runs every turn. It costs about 15 tokens and does one thing: when you create new patterns, conventions, or workflows during a session, it nudges you to consider whether your config should be updated. It also catches phrases like "save this as a rule" or "add this to the config" and routes them to the config updater. It never modifies anything on its own.
 
-**Config Updater (you trigger, active maintenance).** When you are ready to act on those nudges (or just want a periodic check), you run the config updater. It scans your recent git changes, finds where config has drifted, and proposes fixes. You approve each one.
+**Config Updater (auto-triggers or manual).** Activates when you say "save this as a rule", "make this a convention", etc. -- or when you explicitly run `/cwfo:config-updater`. It scans your recent git changes, figures out the right config placement, and proposes fixes. You approve each one. (Note: "remember this" goes to Claude's built-in memory, not CWFO. Use config-specific language like "add this to the rules" to trigger CWFO instead.)
 
 **Config Audit (you trigger, periodic health check).** Every so often, run an audit to catch structural issues, formatting problems, or deviations from best practices that the updater would not catch.
 
