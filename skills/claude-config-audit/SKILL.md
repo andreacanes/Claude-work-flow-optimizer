@@ -19,17 +19,17 @@ context:
 
 ## Setup
 
-Best-practice reference files are cached at `~/.cache/cwfo/best-practice/`. Before starting, check if they exist:
+Best-practice reference files are cached at `~/.cache/cwfo/best-practice/`. Check if they exist and are recent:
 
 ```bash
 ls ~/.cache/cwfo/best-practice/*.md 2>/dev/null | head -1
 ```
 
-If missing or you want to refresh, fetch them:
+If the cache directory is missing or empty, do NOT fetch inline. Tell the user:
 
-```bash
-mkdir -p ~/.cache/cwfo/best-practice && for f in claude-memory.md claude-skills.md claude-subagents.md claude-mcp.md claude-commands.md claude-cli-startup-flags.md claude-settings.md; do curl -sS -f -o ~/.cache/cwfo/best-practice/$f "https://raw.githubusercontent.com/shanraisshan/claude-code-best-practice/main/best-practice/$f"; done
-```
+> **Best-practice references not found.** Run `/cwfo:update` to fetch them. Without references, Quick Lint Mode is fully functional but Full Audit will check structural correctness only, not best-practice alignment.
+
+If the user wants to proceed without references, continue with structural checks only. If references exist, proceed normally.
 
 ## Mode Selection
 
@@ -51,7 +51,20 @@ Structural validation only. Skips best-practice comparison.
 7. **Agent tool validation:** For each agent with `tools:` entries, check that tool names follow valid patterns.
 8. **Duplicate detection:** Check for duplicate rule filenames across `.claude/rules/`.
 
-Report pass/fail for each check. End with a summary of issues found (if any).
+Use this output format for each check:
+
+```
+[PASS] CLAUDE.md: 142 lines (< 200 limit)
+[FAIL] Rule path resolution: api-testing.md → "src/api-tests/**" matches 0 files
+[PASS] Skill frontmatter: 3/3 skills parse correctly
+[WARN] Agent tool restriction: codebase-mapper allows Bash(find:*) — consider restricting
+```
+
+- `[PASS]` — check passed
+- `[FAIL]` — structural problem that must be fixed
+- `[WARN]` — not broken but worth reviewing
+
+End with a summary line: `X passed, Y failed, Z warnings`.
 
 ---
 

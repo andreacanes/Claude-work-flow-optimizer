@@ -6,7 +6,8 @@ Use this quick reference to determine where configuration belongs:
 |----------|-----------------|
 | Permanent project truth (tech stack, structure, workflow)? | CLAUDE.md |
 | Always-on, applies to ALL files? | CLAUDE.md |
-| Applies ONLY when touching specific file paths? | Rule with `paths:` globs |
+| Short convention (5-10 lines) for specific file paths? | Rule with `paths:` globs |
+| Dense, directory-specific context (50+ lines) that only matters when working there? | Subdirectory CLAUDE.md (lazy-loaded) |
 | Multi-step methodology/workflow for a complex task? | Skill (SKILL.md) |
 | Needs context isolation or parallelism? | Agent |
 | Needs persistent state or external API access? | MCP |
@@ -17,11 +18,13 @@ Use this quick reference to determine where configuration belongs:
 
 - CLAUDE.md > 200 lines → move path-specific content to rules
 - Rule without `paths:` → should be in CLAUDE.md or a skill
+- Rule body exceeding 15 lines → probably belongs in a subdirectory CLAUDE.md (rules are always-on for matching paths; dense content should be lazy-loaded)
 - Skill doing simple convention enforcement → should be a rule
 - Agent that doesn't need isolation → should be inline or a skill
 - MCP replaceable by a bash script → should be a skill script
 - `@import` of large files in CLAUDE.md → use skill `context:` instead
 - Duplicated content across CLAUDE.md and subdirectory files → consolidate
+- Subdirectory CLAUDE.md that contradicts root without clear specialization intent → resolve conflict
 
 ## Context Budget Targets
 

@@ -20,13 +20,16 @@ allowed-tools:
 
 ## Process
 
-1. Run `git diff --stat HEAD~10` to see what changed recently
+1. Determine what changed since the last config update:
+   - Check if `.claude/.cwfo-last-update` exists. If so, read the stored commit hash and run `git diff --stat $(cat .claude/.cwfo-last-update)..HEAD`
+   - If the marker doesn't exist, fall back to `git diff --stat HEAD~10`
 2. Read the current `.claude/` config inventory (agents, skills, rules, CLAUDE.md)
 3. For each changed area, check:
 
 **New directory or module?**
-- Does it need a subdirectory CLAUDE.md? (Only if it has distinct conventions from the rest of the project)
-- Does it need new rules with path globs?
+- Does it need a **rule** with path globs? → Yes when: short convention (5-10 lines), enforcement-style ("always use X"), applies to a glob pattern
+- Does it need a **subdirectory CLAUDE.md**? → Yes when: dense context (50+ lines), domain-specific knowledge (API patterns, auth flows, framework architecture), only relevant when working in that directory
+- Does it need **neither**? → When the convention is already covered by root CLAUDE.md or an existing rule
 
 **New pattern established?**
 - If 3+ files follow the same new convention, that's a rule candidate.
@@ -51,6 +54,11 @@ allowed-tools:
    - Why (what codebase change triggered it)
    - Where it goes (which system and why that system)
 5. **Only apply changes the user approves.**
+6. After applying changes, record the current commit as a watermark so the next run knows where to start:
+
+```bash
+mkdir -p .claude && git rev-parse HEAD > .claude/.cwfo-last-update
+```
 
 ## Decision Framework — Where to Put Things
 

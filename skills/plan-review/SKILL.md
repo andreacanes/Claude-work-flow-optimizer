@@ -10,7 +10,7 @@ allowed-tools:
   - Bash(git:*)
   - Bash(ls:*)
 context:
-  - ../../reference-docs/plan-review-protocol.md
+  - references/plan-review-protocol.md
 ---
 
 ## Quick Start

@@ -17,10 +17,11 @@ allowed-tools:
   - Bash(wc:*)
   - Bash(find:*)
   - Bash(bash:*)
-  - Bash(curl:*)
   - Agent
 context:
   - references/bootstrap-template.md
+  - ../shared-references/investigation-phase.md
+  - references/generation-process.md
 ---
 
 ## Pre-check
@@ -42,62 +43,15 @@ Best-practice reference files are cached at `~/.cache/cwfo/best-practice/`. Chec
 ls ~/.cache/cwfo/best-practice/*.md 2>/dev/null | head -1
 ```
 
-If missing or you want to refresh, fetch them:
+If the cache directory is missing or empty, do NOT fetch inline. Tell the user:
 
-```bash
-mkdir -p ~/.cache/cwfo/best-practice && for f in claude-memory.md claude-skills.md claude-subagents.md claude-mcp.md claude-commands.md claude-cli-startup-flags.md claude-settings.md; do curl -sS -f -o ~/.cache/cwfo/best-practice/$f "https://raw.githubusercontent.com/shanraisshan/claude-code-best-practice/main/best-practice/$f"; done
-```
+> **Best-practice references not found.** Run `/cwfo:update` to fetch them. Without references, bootstrap will generate config based on codebase analysis only, not best-practice alignment.
+
+If the user wants to proceed without references, continue with codebase analysis only.
 
 ## Phase 1: Investigate (Parallel Subagents)
 
-Spawn these 4 investigation subagents simultaneously. Each explores the codebase independently and writes findings to `./audit/` as a handoff file.
-
-Create `./audit/` directory first:
-
-```bash
-mkdir -p ./audit
-```
-
-### Subagent 1: Codebase Map
-
-Use the `codebase-mapper` agent. It will explore the entire project structure and document:
-- What framework/language/tool is used per directory
-- What patterns and conventions are visible in the actual code
-- What file types exist and where
-- What the build/deploy/test pipeline looks like
-
-Output: `./audit/codebase-map.md`
-
-### Subagent 2: Convention Extraction
-
-Use the `convention-extractor` agent. It will read 3-5 representative files from each major directory and extract:
-- Naming patterns (files, variables, components, functions)
-- Import ordering and structure
-- Error handling patterns
-- Styling approach
-- Testing patterns
-- API patterns
-
-Output: `./audit/conventions-found.md`
-
-### Subagent 3: Workflow Analysis
-
-Use the `workflow-analyzer` agent. It will examine package.json scripts, CI configs, Makefiles, Dockerfiles, deploy scripts, git hooks, PR templates. Maps out:
-- How code goes from local dev to production
-- What linting/formatting is enforced
-- Testing stages
-- External services
-
-Output: `./audit/workflows-found.md`
-
-### Subagent 4: Current Config Inventory
-
-Use the `config-inventory` agent. It will read every file in `.claude/`, all CLAUDE.md files, and `.mcp.json`. Produces:
-- One-line summary per config file (if any exist)
-- Coverage gaps
-- Starting point assessment
-
-Output: `./audit/current-config.md`
+Follow the investigation phase instructions from the loaded `investigation-phase.md` reference. Dispatch all 4 subagents in parallel and verify all audit files exist before proceeding.
 
 ## Phase 2: Design Config Plan
 
@@ -120,10 +74,11 @@ Also read the best-practice references from `~/.cache/cwfo/best-practice/`:
 For each finding from the agents, categorize using this order:
 
 1. **Permanent project truth** (tech stack, structure, workflow, quality bar) → CLAUDE.md
-2. **Path-specific convention** (naming, imports, patterns per directory) → Rule with `paths:`
-3. **Complex recurring multi-step workflow** → Skill
-4. **Parallelizable or isolatable task** → Agent
-5. **External API or persistent state** → MCP (note only, don't configure)
+2. **Path-specific convention, short** (5-10 lines, enforcement-style, glob pattern) → Rule with `paths:`
+3. **Dense directory-specific context** (50+ lines, domain knowledge, only relevant when working there) → Subdirectory CLAUDE.md
+4. **Complex recurring multi-step workflow** → Skill
+5. **Parallelizable or isolatable task** → Agent
+6. **External API or persistent state** → MCP (note only, don't configure)
 
 ### Present Plan to User
 
@@ -131,6 +86,7 @@ Before generating anything, present the complete plan:
 
 - Proposed CLAUDE.md outline with estimated line count (target < 200)
 - List of proposed rules with their `paths:` globs and one-line descriptions
+- List of proposed subdirectory CLAUDE.md files (if any) with directory and rationale
 - List of proposed skills (if any) with descriptions
 - List of proposed agents (if any) with descriptions
 - Estimated context budget (CLAUDE.md lines + rule count + skill description tokens)
@@ -139,66 +95,7 @@ Before generating anything, present the complete plan:
 
 ## Phase 3: Generate Config (User-Approved)
 
-Only generate what the user approved.
-
-### 3a. Create directory structure
-
-```bash
-mkdir -p .claude/rules .claude/skills .claude/agents
-```
-
-### 3b. Generate CLAUDE.md
-
-Follow the template from `references/bootstrap-template.md`. Keep under 200 lines. Include:
-- Project name and purpose
-- Tech stack (from codebase-map)
-- Project structure overview (from codebase-map)
-- Development workflow (from workflows-found)
-- Quality bar (from conventions-found)
-- Skill inventory (if any skills created)
-
-### 3c. Generate Rules
-
-For each approved rule:
-- Use naming convention: `{domain}-{convention}.md`
-- Include appropriate `paths:` glob in frontmatter
-- Keep body to ~5-10 lines
-- Before writing, verify the `paths:` glob resolves to actual files:
-
-```bash
-find . -path './.git' -prune -o -path '{glob}' -print | head -5
-```
-
-If zero matches, warn the user and adjust the glob.
-
-### 3d. Generate Skills (only if clearly needed)
-
-Only create skills for complex, multi-step, recurring workflows. Most projects need zero skills at bootstrap. If created:
-- SKILL.md with clear description and allowed-tools
-- Reference files if the methodology is complex
-
-### 3e. Generate Agents (only if clearly needed)
-
-Only create agents for genuinely parallelizable or isolatable tasks. Most projects need zero agents at bootstrap.
-
-### 3f. Quick Structural Validation
-
-After generating all config, run a quick validation:
-- CLAUDE.md line count < 200
-- All rule `paths:` globs resolve to at least one file
-- No duplicate rule filenames
-- Skill descriptions are 1-2 sentences
-- Total estimated always-on context < 5% of context window
-
-Report any issues found.
-
-### 3g. Cleanup
-
-Delete the audit directory:
-
-```bash
-rm -rf ./audit
-```
+Follow the generation process instructions from the loaded `generation-process.md` reference. This covers directory creation, CLAUDE.md generation, rules, subdirectory CLAUDE.md files, skills, agents, validation, and cleanup.
 
 ## Key Constraint
 

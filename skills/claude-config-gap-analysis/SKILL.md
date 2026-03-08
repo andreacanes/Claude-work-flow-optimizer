@@ -14,6 +14,8 @@ allowed-tools:
   - Bash(find:*)
   - Bash(bash:*)
   - Agent
+context:
+  - ../shared-references/investigation-phase.md
 ---
 
 ## Setup
@@ -24,64 +26,15 @@ Best-practice reference files are cached at `~/.cache/cwfo/best-practice/`. Chec
 ls ~/.cache/cwfo/best-practice/*.md 2>/dev/null | head -1
 ```
 
-If missing or you want to refresh, fetch them:
+If the cache directory is missing or empty, do NOT fetch inline. Tell the user:
 
-```bash
-mkdir -p ~/.cache/cwfo/best-practice && for f in claude-memory.md claude-skills.md claude-subagents.md claude-mcp.md claude-commands.md claude-cli-startup-flags.md claude-settings.md; do curl -sS -f -o ~/.cache/cwfo/best-practice/$f "https://raw.githubusercontent.com/shanraisshan/claude-code-best-practice/main/best-practice/$f"; done
-```
+> **Best-practice references not found.** Run `/cwfo:update` to fetch them. Without references, gap analysis will evaluate structural correctness and codebase-to-config alignment only, not best-practice compliance.
+
+If the user wants to proceed without references, continue with structural analysis only.
 
 ## Phase 1: Understand the Codebase (Parallel Subagents)
 
-Spawn these 4 investigation subagents simultaneously. Each explores the codebase independently and writes findings to `./audit/` as a handoff file.
-
-Create `./audit/` directory first:
-
-```bash
-mkdir -p ./audit
-```
-
-### Subagent 1: Codebase Map
-
-Use the `codebase-mapper` agent. It will explore the entire project structure and document:
-- What framework/language/tool is used per directory
-- What patterns and conventions are visible in the actual code (not what CLAUDE.md says)
-- What file types exist and where
-- What the build/deploy/test pipeline looks like
-
-Output: `./audit/codebase-map.md`
-
-### Subagent 2: Convention Extraction
-
-Use the `convention-extractor` agent. It will read 3-5 representative files from each major directory and extract:
-- Naming patterns (files, variables, components, functions)
-- Import ordering and structure
-- Error handling patterns
-- Styling approach
-- Testing patterns
-- API patterns
-- Consistent patterns NOT documented in `.claude/`
-
-Output: `./audit/conventions-found.md`
-
-### Subagent 3: Workflow Analysis
-
-Use the `workflow-analyzer` agent. It will examine package.json scripts, CI configs, Makefiles, Dockerfiles, deploy scripts, git hooks, PR templates. Maps out:
-- How code goes from local dev to production
-- What linting/formatting is enforced
-- Testing stages
-- External services
-- Manual processes that could benefit from automation
-
-Output: `./audit/workflows-found.md`
-
-### Subagent 4: Current Config Inventory
-
-Use the `config-inventory` agent. It will read every file in `.claude/`, all CLAUDE.md files, and `.mcp.json`. Produces:
-- One-line summary per config file
-- References that don't resolve
-- Coverage gaps
-
-Output: `./audit/current-config.md`
+Follow the investigation phase instructions from the loaded `investigation-phase.md` reference. Dispatch all 4 subagents in parallel and verify all audit files exist before proceeding.
 
 ## Phase 2: Gap Analysis (After All Subagents Complete)
 
@@ -96,12 +49,18 @@ Compare `./audit/codebase-map.md` against root CLAUDE.md:
 - Is there a skill inventory that matches what exists in `.claude/skills/`?
 - For each major directory cluster: does this area have enough guidance?
 
+Also evaluate subdirectory CLAUDE.md needs:
+- Are there directories with dense domain logic (API patterns, auth flows, framework architecture) but no CLAUDE.md and no rule?
+- Are there directories where 50+ lines of context would only matter when working there? → Subdirectory CLAUDE.md candidate
+- Do existing subdirectory CLAUDE.md files duplicate root CLAUDE.md content? → Flag for consolidation
+
 ### Rules Assessment
 
 Compare `./audit/conventions-found.md` against `.claude/rules/`:
 - For every convention found in actual code, is there a rule enforcing it?
 - For every file type or directory pattern, would a path-scoped rule help?
 - Prioritize rules where conventions are subtle or easy to break
+- **Flag overloaded rules:** any rule with body >15 lines should probably be a subdirectory CLAUDE.md instead (rules are always-on for matching paths; dense content belongs in lazy-loaded subdirectory CLAUDE.md)
 
 Consider rules for: component structure, naming conventions, import organization, error handling per layer, testing conventions, styling methodology, accessibility patterns, performance patterns.
 
