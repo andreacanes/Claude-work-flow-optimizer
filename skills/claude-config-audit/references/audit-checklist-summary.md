@@ -16,6 +16,7 @@ Use this quick reference to determine where configuration belongs:
 
 ## Red Flags
 
+- CLAUDE.md missing Config Maintenance section → project config will drift silently (high priority)
 - CLAUDE.md > 200 lines → move path-specific content to rules
 - Rule without `paths:` → should be in CLAUDE.md or a skill
 - Rule body exceeding 15 lines → probably belongs in a subdirectory CLAUDE.md (rules are always-on for matching paths; dense content should be lazy-loaded)

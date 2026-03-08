@@ -48,6 +48,7 @@ Compare `./audit/codebase-map.md` against root CLAUDE.md:
 - Does it mention the actual workflow from `./audit/workflows-found.md`?
 - Is there a skill inventory that matches what exists in `.claude/skills/`?
 - For each major directory cluster: does this area have enough guidance?
+- Does CLAUDE.md include a **Config Maintenance section** (decision framework for when to update config)? If missing, this is a HIGH PRIORITY gap — without it, the project's config will drift silently. The section should teach Claude when to create rules, update CLAUDE.md, or add skills.
 
 Also evaluate subdirectory CLAUDE.md needs:
 - Are there directories with dense domain logic (API patterns, auth flows, framework architecture) but no CLAUDE.md and no rule?

@@ -42,6 +42,6 @@ This project IS a plugin — files live at `skills/`, `agents/`, `rules/`, `comm
 
 ## Development Notes
 
-- Total always-on context cost: ~68 tokens/turn
+- Total always-on context cost: ~63 tokens/turn
 - `config-updater` uses `.claude/.cwfo-last-update` watermark in target projects
 - Run `bash scripts/lint.sh .` against any project for fast structural validation

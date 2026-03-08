@@ -34,6 +34,10 @@ Target: < 200 lines. Include only what applies.
 
 ## Skill Inventory
 - One line per skill describing when to use it
+
+## Config Maintenance
+- When to update CLAUDE.md, create rules, or add skills
+- Decision framework for new patterns (always included — see generation-process.md 3b-2)
 ```
 
 ## Subdirectory CLAUDE.md Guidelines
@@ -115,5 +119,5 @@ Apply these findings when generating config:
 - **Context budget rationale:** The < 200 line CLAUDE.md limit isn't arbitrary — smart retrieval (rules, skills, `context:`) outperforms brute-force loading. Even with 1M context windows, loading everything upfront degrades signal-to-noise.
 - **File-based handoffs:** For multi-step workflows, write intermediate results to files rather than passing through conversation context. This enables parallel execution and prevents context bloat.
 - **Task sizing:** Skills and agents work best when scoped to 15-45 minute tasks. Larger tasks should be decomposed into phases with file-based handoffs between them.
-- **Maintenance loop:** Always recommend a lightweight config-awareness rule in bootstrapped projects. The initial config is never complete — the maintenance loop (`config-awareness` rule → `config-updater` skill → periodic `audit`) handles drift.
+- **Self-preserving config:** Every generated CLAUDE.md must include the Config Maintenance section (see generation-process.md step 3b-2). This teaches the project to maintain its own config without requiring an external plugin. Claude reads CLAUDE.md every session and follows the maintenance guidance reactively. Do NOT generate a separate config-awareness rule — the CLAUDE.md section is more reliable (always loaded, never path-gated).
 - **Subagent guidance:** Use agents for simplification (independent parallel tasks) and verification (isolated validation), not for orchestration. The main conversation should orchestrate; agents should execute.

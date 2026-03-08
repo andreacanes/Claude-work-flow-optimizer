@@ -92,17 +92,15 @@ A background rule also watches for plan files, so if Claude creates a plan durin
 
 ---
 
-## The Self-Maintaining Config Loop
+## How Config Stays Current
 
-Three pieces of CWFO work together to keep your config healthy over time:
+CWFO takes two approaches to keeping your config healthy:
 
-**Config Awareness Rule (always on, passive).** This is a lightweight rule that runs every turn. It costs about 15 tokens and does one thing: when you create new patterns, conventions, or workflows during a session, it nudges you to consider whether your config should be updated. It also catches phrases like "save this as a rule" or "add this to the config" and routes them to the config updater. It never modifies anything on its own.
+**1. Self-preserving config (no plugin needed).** Every CLAUDE.md that CWFO generates includes a Config Maintenance section -- a compact decision framework that teaches Claude when and how to update the config. Claude reads CLAUDE.md at the start of every session, so this works automatically: when you add a new directory, Claude knows to consider whether it needs a rule or subdirectory CLAUDE.md. When you change your tech stack, Claude knows to update the relevant CLAUDE.md section. The project maintains itself because its own CLAUDE.md tells Claude how to maintain it.
 
-**Config Updater (auto-triggers or manual).** Activates when you say "save this as a rule", "make this a convention", etc. -- or when you explicitly run `/cwfo:updater`. It scans your recent git changes, figures out the right config placement, and proposes fixes. You approve each one. (Note: "remember this" goes to Claude's built-in memory, not CWFO. Use config-specific language like "add this to the rules" to trigger CWFO instead.)
+**2. Deep periodic maintenance (requires CWFO).** The self-preserving config handles day-to-day reactive maintenance -- "I just added a directory, does it need config?" But it cannot do systematic proactive work like scanning your last 50 commits for convention drift, or comparing your entire codebase against your rules to find gaps. That is what `/cwfo:gap-analysis` and `/cwfo:updater` are for. Think of these as a quarterly checkup -- you do not need them every session, but they catch things that reactive maintenance misses.
 
-**Config Audit (you trigger, periodic health check).** Every so often, run an audit to catch structural issues, formatting problems, or deviations from best practices that the updater would not catch.
-
-Together: awareness spots the moment, the updater proposes the fix, and the audit makes sure everything stays clean.
+**Trigger phrase routing.** CWFO includes an always-on rule that catches phrases like "save this as a rule" or "add this to the config" and routes them to the config updater. This gives you a natural way to capture knowledge during a session. (Note: "remember this" goes to Claude's built-in memory, not CWFO. Use config-specific language to trigger CWFO instead.)
 
 ---
 
@@ -168,9 +166,9 @@ CWFO is designed to be lightweight when idle. The always-on cost breaks down lik
 
 | Component | Always loaded? | Estimated tokens/turn |
 |-----------|---------------|----------------------|
-| Config awareness rule | Yes (all files) | ~15 |
-| Plan review rule | Yes (all files) | ~20 |
+| Config awareness rule | Yes (trigger phrase routing) | ~10 |
+| Plan review rule | Yes (plan detection) | ~20 |
 | Skill descriptions (5) | Yes (descriptions only) | ~33 |
-| **Total always-on** | | **~68** |
+| **Total always-on** | | **~63** |
 
-Everything else -- the agents, the best-practice references, the full skill logic -- loads on demand only when you invoke a skill. Sixty-eight tokens per turn is the standing cost of having CWFO installed.
+Everything else -- the agents, the best-practice references, the full skill logic -- loads on demand only when you invoke a skill. Sixty-three tokens per turn is the standing cost of having CWFO installed.

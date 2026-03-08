@@ -23,6 +23,25 @@ If no `CLAUDE.md` exists, follow the template from `references/bootstrap-templat
 - Quality bar (from conventions-found)
 - Skill inventory (if any skills created)
 
+## 3b-2. Add Config Maintenance Section to CLAUDE.md
+
+Every generated CLAUDE.md MUST end with this section (adapt the date):
+
+```markdown
+## Config Maintenance
+
+This config was generated to match the codebase as of [DATE]. When the codebase evolves:
+
+- **New directory or module**: Does it need a rule (~5-10 lines, `paths:` scoped) or subdirectory CLAUDE.md (50+ lines, domain context)?
+- **New recurring workflow**: Does it need a skill?
+- **Changed tech stack or structure**: Update the relevant section of this CLAUDE.md.
+- **Rule whose `paths:` no longer matches files**: Delete or update it.
+
+When proposing config changes, explain what and why. Never create config silently.
+```
+
+This section is the self-preservation mechanism. Claude reads CLAUDE.md every session, so this teaches the project to maintain its own config without external plugins. It encodes the core placement decision framework in 6 lines that Claude can act on reactively.
+
 ## 3c. Generate Rules
 
 For each approved rule:
