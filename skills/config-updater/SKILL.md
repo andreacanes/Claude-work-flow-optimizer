@@ -6,8 +6,8 @@ description: >
   a feature, after a refactor, after adding a new domain or framework,
   or whenever the codebase has evolved and config might be stale.
   Also use when the user says things like "save this pattern",
-  "remember this for next time", or "we should always do it this way".
-disable-model-invocation: true
+  "remember this for next time", "we should always do it this way",
+  "add this to the rules", or "make sure Claude always does this".
 allowed-tools:
   - Read
   - Write
