@@ -46,6 +46,8 @@ Target: < 200 lines. Include only what applies.
 **When to use a rule instead:**
 - Short convention (5-10 lines), enforcement-style ("always use X"), applies to a glob pattern
 
+**In-between (15-49 lines):** Content too large for a rule but not quite 50 lines. Use a rule if the content can be compressed to ~10 lines without losing meaning. Otherwise use a subdirectory CLAUDE.md — the 50-line threshold is a guideline, not a hard cutoff. A 30-line CLAUDE.md with dense domain context is better than a 30-line always-on rule.
+
 **Conflict resolution:** If a subdirectory CLAUDE.md contradicts root CLAUDE.md, the subdirectory instruction wins for files in that directory. Keep root CLAUDE.md general and let subdirectories specialize. Never duplicate root content in subdirectories.
 
 **Nesting depth:** 2 levels (root + component) is the norm. 3+ levels are justified only for genuinely distinct sub-domains (e.g., `packages/payments/providers/stripe/CLAUDE.md` where Stripe-specific patterns differ from other payment providers). If you find yourself at 4+ levels, the directory structure itself may need flattening.

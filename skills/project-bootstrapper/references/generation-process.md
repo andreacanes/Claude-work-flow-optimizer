@@ -10,7 +10,12 @@ mkdir -p .claude/rules .claude/skills .claude/agents
 
 ## 3b. Generate CLAUDE.md
 
-Follow the template from `references/bootstrap-template.md`. Keep under 200 lines. Include:
+If a root `CLAUDE.md` already exists:
+- Read it and assess quality. If it covers the template sections well, keep it and only supplement gaps.
+- If it's over 200 lines, propose trimming path-specific content to rules.
+- Never silently overwrite an existing CLAUDE.md — show the user what would change.
+
+If no `CLAUDE.md` exists, follow the template from `references/bootstrap-template.md`. Keep under 200 lines. Include:
 - Project name and purpose
 - Tech stack (from codebase-map)
 - Project structure overview (from codebase-map)
@@ -24,13 +29,7 @@ For each approved rule:
 - Use naming convention: `{domain}-{convention}.md`
 - Include appropriate `paths:` glob in frontmatter
 - Keep body to ~5-10 lines
-- Before writing, verify the `paths:` glob resolves to actual files:
-
-```bash
-find . -path './.git' -prune -o -path '{glob}' -print | head -5
-```
-
-If zero matches, warn the user and adjust the glob.
+- Before writing, verify the `paths:` glob resolves to actual files using the `Glob` tool (not `find`, which uses different glob semantics than Claude Code's `paths:` format). If zero matches, warn the user and adjust the glob.
 
 ## 3d. Generate Subdirectory CLAUDE.md (when appropriate)
 

@@ -26,14 +26,19 @@ context:
 
 ## Pre-check
 
-Before starting, check if `.claude/` already has substantial config:
+Before starting, check if the project already has AI-tool config:
 
 ```bash
+ls CLAUDE.md 2>/dev/null
 ls .claude/ 2>/dev/null && ls .claude/rules/ 2>/dev/null && ls .claude/skills/ 2>/dev/null && ls .claude/agents/ 2>/dev/null
+ls .cursor/rules/ 2>/dev/null
+ls .windsurfrules 2>/dev/null
 ```
 
 - If `.claude/` has rules, skills, or agents already → tell the user this project already has config and suggest `/cwfo:claude-config-gap-analysis` (for deep analysis) or `/cwfo:config-updater` (for incremental updates) instead. **Stop here.**
-- If `.claude/` is empty or doesn't exist → proceed with bootstrapping.
+- If a root `CLAUDE.md` already exists (but no `.claude/` directory) → warn the user: "This project has an existing CLAUDE.md but no `.claude/` config directory. Bootstrap will preserve the existing CLAUDE.md and build `.claude/` config around it. Proceed?" Wait for confirmation.
+- If `.cursor/rules/` or `.windsurfrules` exist → note: "Found existing AI-tool config. The investigation phase will analyze these for conventions to migrate to Claude Code format."
+- If none of the above exist → proceed with bootstrapping.
 
 ## Setup
 

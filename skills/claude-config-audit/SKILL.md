@@ -4,7 +4,9 @@ description: >
   Audit a project's Claude Code architecture — CLAUDE.md, rules, skills, agents, MCPs.
   Use when the user says "audit", "review config", "check my claude setup",
   "is my config correct", "what's wrong with my claude config",
-  "quick check", "validate config", "lint my config", or "lint config".
+  "quick check", "validate config", "lint my config", "lint config",
+  "self-check", "check plugin health", "validate cwfo",
+  "incremental audit", "what changed", or "audit recent changes".
 allowed-tools:
   - Read
   - Glob
@@ -15,6 +17,8 @@ allowed-tools:
   - Bash(bash:*)
 context:
   - references/audit-checklist-summary.md
+  - references/self-check.md
+  - references/incremental-audit.md
 ---
 
 ## Setup
@@ -33,12 +37,28 @@ If the user wants to proceed without references, continue with structural checks
 
 ## Mode Selection
 
+If the user said "self-check", "check plugin health", or "validate cwfo" → run **Self-Check Mode** below.
+If the user said "incremental audit", "what changed", or "audit recent changes" → run **Incremental Audit Mode** below.
 If the user said "quick check", "validate config", "lint", or similar → run **Quick Lint Mode** below.
 Otherwise → run the **Full Audit Process**.
 
 ---
 
+## Self-Check Mode
+
+Validates CWFO's own internal consistency, not a target project. Follow the protocol in `references/self-check.md`. Use `[PASS]`/`[FAIL]`/`[WARN]` output format and end with a summary line.
+
+---
+
+## Incremental Audit Mode
+
+Fast, targeted audit of only the config items affected by recent file changes. Complements (does not replace) full audit. Follow the protocol in `references/incremental-audit.md`. Uses the same `.claude/.cwfo-last-update` watermark as config-updater. Use `[INCREMENTAL][PASS]`/`[INCREMENTAL][FAIL]`/`[INCREMENTAL][WARN]` output format.
+
+---
+
 ## Quick Lint Mode
+
+If the cwfo plugin's `scripts/lint.sh` is available, you can run it for fast deterministic validation: `bash <cwfo-plugin-path>/scripts/lint.sh .` — parse and report its output. If the script isn't available, perform the checks manually as described below.
 
 Structural validation only. Skips best-practice comparison.
 
