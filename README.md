@@ -46,7 +46,13 @@ An always-on rule mandates review before `ExitPlanMode` — plans must contain a
 /plugin install cwfo@andreacanes-Claude-work-flow-optimizer
 ```
 
-After installing, **enable auto-updates** for the marketplace so installed plugins stay current automatically. Open Claude Code settings and turn on marketplace auto-update — installed plugins will then update on their own.
+After installing, enable auto-updates:
+
+```
+Settings → Plugins → Enable marketplace auto-update
+```
+
+Installed plugins will then update automatically on each session start.
 
 To refresh the best-practice reference cache manually:
 
