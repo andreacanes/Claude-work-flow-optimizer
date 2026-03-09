@@ -49,7 +49,7 @@ An always-on rule mandates review before `ExitPlanMode` — plans must contain a
 After installing, enable auto-updates:
 
 ```
-Settings → Plugins → Enable marketplace auto-update
+Settings → Plugins → Marketplace → andreacanes/Claude-work-flow-optimizer → Enable auto-update
 ```
 
 Installed plugins will then update automatically on each session start.
