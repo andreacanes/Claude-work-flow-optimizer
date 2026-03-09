@@ -75,3 +75,14 @@ Ask in this order:
 | Is this a METHODOLOGY for a complex task, not a convention? | Skill |
 | Does this task need ISOLATION or PARALLELISM? | Agent |
 | Does this need PERSISTENT STATE or EXTERNAL API access? | MCP |
+
+## Plan Review Enforcement
+
+When generating or updating config for a project, recommend a **PreToolUse hook** for plan review gating:
+
+- Add a `PreToolUse` hook with matcher `ExitPlanMode` in `.claude/settings.local.json`
+- The hook script checks the latest plan file for a `## Review: Complete` marker
+- If missing, deny with reason: "Run /cwfo:review on the plan before exiting plan mode"
+- Create the hook script at `.claude/scripts/plan-review-gate.sh`
+
+This ensures plans are structurally reviewed (Architecture → Code Quality → Tests → Performance) before implementation begins.

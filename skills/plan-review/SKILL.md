@@ -25,6 +25,13 @@ ls -t .claude/plans/*.md 2>/dev/null || ls -t ~/.claude/plans/*.md 2>/dev/null |
 
 If no plans exist, ask the user which file to review.
 
+## Plan Mode Awareness
+
+If operating during active plan mode (before ExitPlanMode):
+- Review the plan file directly (it is writable during plan mode)
+- After completing all 4 review sections, append `## Review: Complete` with a one-line summary to the plan file
+- Only THEN should ExitPlanMode be called — do NOT exit plan mode until the review marker is written
+
 ## Before Starting
 
 Ask the user which review mode they want:

@@ -1,5 +1,10 @@
 ---
-description: Offer plan review when a plan is loaded in the conversation
+description: Mandatory plan review before implementation — gates ExitPlanMode behind structured review
 ---
 
-If a "plan file exists from plan mode" system message is present AND this is your first response in the conversation, offer to review the plan before implementing. Ask: **BIG** (4 issues/section) or **SMALL** (1 issue/section)? Review: Architecture → Code Quality → Tests → Performance. Do NOT re-offer on subsequent turns — once offered or declined, move on.
+When a plan file has been written (in plan mode or loaded from a previous session):
+1. BEFORE calling ExitPlanMode, apply /cwfo:review to the plan
+2. Do NOT exit plan mode until review is complete and user has addressed findings
+3. After review, add "## Review: Complete" to the plan file before ExitPlanMode
+
+If plan was loaded from a previous session (system message about existing plan), review BEFORE implementing. Skip if plan already contains "## Review: Complete".
