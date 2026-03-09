@@ -417,7 +417,7 @@ check_claude_md_consistency() {
   done < <(find "$PROJECT_DIR" -name "CLAUDE.md" -not -path "*/node_modules/*" 2>/dev/null)
 
   if [ "$has_subdir_claude" -eq 1 ]; then
-    if grep -qi 'no separate detail layer\|rules are self.contained\|no.*subdirectory.*claude' "$claude_f" 2>/dev/null; then
+    if grep -qi 'no separate detail layer\|rules are self.contained' "$claude_f" 2>/dev/null; then
       warn "CLAUDE.md consistency: states rules are self-contained/no detail layer, but subdirectory CLAUDE.md files exist — update to reflect two-artifact architecture"
       issues=$((issues + 1))
     fi

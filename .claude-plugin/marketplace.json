@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "cwfo",
-      "version": "1.5.3",
+      "version": "1.5.4",
       "description": "Claude Work Flow Optimizer — Audit and maintain Claude Code config against best practices",
       "source": "./"
     }
