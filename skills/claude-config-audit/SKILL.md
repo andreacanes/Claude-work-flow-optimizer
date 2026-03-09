@@ -67,12 +67,15 @@ Structural validation only. Skips best-practice comparison.
 3. **Rule frontmatter:** Read every file in `.claude/rules/`. Verify YAML frontmatter parses correctly.
 4. **Rule path resolution:** For each rule with `paths:` globs, verify each glob resolves to at least one file. Flag dead rules.
 5. **Rule body length:** Measure body lines (after frontmatter). WARN >15 lines, FAIL >50 lines. Report worst offender and total.
-6. **Always-on rules:** Detect rules without `paths:`. WARN if total always-on body >30 lines.
-7. **Rule overlap:** Map rules to directory buckets. Count overlapping rules per directory. FAIL if >10 overlap. Estimate tokens (~10/line). FAIL >5000, WARN >3000.
-8. **Skill frontmatter:** Read every `SKILL.md` in `.claude/skills/*/`. Verify YAML frontmatter parses.
-9. **Skill preload resolution:** For each skill with `context:` references, verify the referenced files exist.
-10. **Agent preload resolution:** For each agent with `skills:` entries, verify the referenced skill directories exist.
-11. **Duplicate detection:** Check for duplicate rule filenames across `.claude/rules/`.
+6. **Always-on / broad-glob rules:** Detect rules without `paths:` (WARN if total body >30 lines). Also detect rules with broad globs like `src/**` that are functionally always-on.
+7. **Context budget:** Estimate tokens per directory (~10/line). FAIL >5000, WARN >3000. This is the primary overlap metric.
+8. **Rule overlap count:** WARN if >15 rules fire simultaneously on any directory (secondary to tokens).
+9. **Subdirectory CLAUDE.md size:** WARN if any subdirectory CLAUDE.md exceeds 300 lines.
+10. **CLAUDE.md consistency:** Check root CLAUDE.md doesn't contradict actual architecture (e.g., "rules are self-contained" when subdirectory CLAUDE.md files exist).
+11. **Skill frontmatter:** Read every `SKILL.md` in `.claude/skills/*/`. Verify YAML frontmatter parses.
+12. **Skill preload resolution:** For each skill with `context:` references, verify the referenced files exist.
+13. **Agent preload resolution:** For each agent with `skills:` entries, verify the referenced skill directories exist.
+14. **Duplicate detection:** Check for duplicate rule filenames across `.claude/rules/`.
 
 Use this output format for each check:
 

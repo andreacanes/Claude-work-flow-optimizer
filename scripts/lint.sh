@@ -215,24 +215,40 @@ check_rule_body_length() {
   fi
 }
 
-# 8. Always-on rule detection
+# 8. Always-on rule detection (includes broad-glob detection)
 check_always_on_rules() {
   local d="$PROJECT_DIR/.claude/rules"
   if [ ! -d "$d" ]; then return 0; fi
   local always_on=0 always_on_lines=0 names=""
+  local broad=0 broad_names=""
   for f in "$d"/*.md; do
     [ -f "$f" ] || continue
     local name content; name=$(basename "$f"); content=$(cat "$f")
     extract_fm "$content" || continue
     local rule_paths; rule_paths=$(extract_paths "$FM")
+    local total_lines body_lines
+    total_lines=$(echo "$content" | wc -l | tr -d '[:space:]')
+    body_lines=$((total_lines - FM_END - 1))
+    [ "$body_lines" -lt 0 ] && body_lines=0
     if [ -z "$rule_paths" ]; then
       always_on=$((always_on + 1))
-      local total_lines body_lines
-      total_lines=$(echo "$content" | wc -l | tr -d '[:space:]')
-      body_lines=$((total_lines - FM_END - 1))
-      [ "$body_lines" -lt 0 ] && body_lines=0
       always_on_lines=$((always_on_lines + body_lines))
       names="${names:+$names, }$name(${body_lines}L)"
+    else
+      # Check for broad globs that are functionally always-on
+      local is_broad=0
+      for g in $rule_paths; do
+        case "$g" in
+          "src/**"|"src/**/*"|"src/**/*.ts"|"src/**/*.tsx"|"src/**/*.ts"|"**/*"|"**/*.ts"|"**/*.tsx")
+            is_broad=1 ;;
+          src/\*\*/\*."{ts,tsx}"|src/\*\*/\*.\{ts,tsx\})
+            is_broad=1 ;;
+        esac
+      done
+      if [ "$is_broad" -eq 1 ]; then
+        broad=$((broad + 1))
+        broad_names="${broad_names:+$broad_names, }$name"
+      fi
     fi
   done
   if [ "$always_on" -gt 0 ]; then
@@ -241,6 +257,9 @@ check_always_on_rules() {
     else
       pass "Always-on rules: $always_on rules without paths: ($always_on_lines total body lines)"
     fi
+  fi
+  if [ "$broad" -gt 0 ]; then
+    warn "Broad-glob rules: $broad rules with src/** paths fire on all source files ($broad_names) — consider moving to CLAUDE.md or narrowing globs"
   fi
 }
 
@@ -309,25 +328,29 @@ check_rule_overlap() {
     done
   done
 
-  # Report
-  local worst_dir="" worst_count=0 worst_lines=0 any_problem=0
+  # Report — token budget is the primary metric, count is secondary
+  local worst_dir="" worst_count=0 worst_lines=0 any_token_fail=0 any_count_warn=0
   for key in "${!dir_counts[@]}"; do
     local c=${dir_counts[$key]} l=${dir_lines[$key]}
+    local et=$((l * 10))
     if [ "$c" -gt "$worst_count" ]; then worst_dir="$key"; worst_count=$c; worst_lines=$l; fi
-    if [ "$c" -gt 10 ]; then
-      fail "Rule overlap: $key/ — $c rules fire simultaneously (~$l body lines)"
-      any_problem=1
+    # Token budget: FAIL >5000, WARN >3000
+    if [ "$et" -gt 5000 ]; then
+      fail "Context budget: $key/ — ~$et est. tokens from $c rules (~$l body lines) exceeds 5000"
+      any_token_fail=1
+    elif [ "$et" -gt 3000 ]; then
+      warn "Context budget: $key/ — ~$et est. tokens from $c rules (~$l body lines) approaching limit"
+    fi
+    # Count: WARN >15 (informational — high count with low tokens is fine)
+    if [ "$c" -gt 15 ]; then
+      warn "Rule overlap: $key/ — $c rules fire simultaneously (consider consolidating)"
+      any_count_warn=1
     fi
   done
-  # Estimate tokens for worst case (rough: 1 line ≈ 10 tokens)
   if [ "$worst_count" -gt 0 ]; then
     local est_tokens=$((worst_lines * 10))
     echo "  [INFO] Worst overlap: $worst_dir/ — $worst_count rules, ~$worst_lines body lines (~$est_tokens est. tokens)"
-    if [ "$est_tokens" -gt 5000 ]; then
-      fail "Context budget: ~$est_tokens estimated tokens from rules alone in $worst_dir/ (>5000)"
-    elif [ "$est_tokens" -gt 3000 ]; then
-      warn "Context budget: ~$est_tokens estimated tokens from rules in $worst_dir/ (>3000)"
-    elif [ "$any_problem" -eq 0 ]; then
+    if [ "$any_token_fail" -eq 0 ] && [ "$any_count_warn" -eq 0 ]; then
       pass "Rule overlap: max $worst_count rules on $worst_dir/ (~$est_tokens est. tokens)"
     fi
   fi
@@ -349,7 +372,72 @@ check_config_maintenance() {
   done
 }
 
-# 11. Duplicate detection
+# 11. Subdirectory CLAUDE.md size check
+check_subdir_claude_md() {
+  local any_found=0 any_warn=0
+  # Find CLAUDE.md files in subdirectories (not root, not node_modules, not .claude)
+  while IFS= read -r f; do
+    [ -f "$f" ] || continue
+    # Skip root CLAUDE.md and node_modules
+    local rel; rel="${f#"$PROJECT_DIR/"}"
+    case "$rel" in
+      CLAUDE.md|.claude/CLAUDE.md|node_modules/*) continue ;;
+    esac
+    any_found=1
+    local lines; lines=$(wc -l < "$f" | tr -d '[:space:]')
+    if [ "$lines" -gt 300 ]; then
+      warn "Subdirectory CLAUDE.md: $rel — $lines lines (>300, may be too dense — focus on what matters when working in this directory)"
+      any_warn=1
+    fi
+  done < <(find "$PROJECT_DIR" -name "CLAUDE.md" -not -path "*/node_modules/*" 2>/dev/null)
+  if [ "$any_found" -eq 1 ] && [ "$any_warn" -eq 0 ]; then
+    pass "Subdirectory CLAUDE.md: all within size limits"
+  fi
+}
+
+# 12. CLAUDE.md consistency check (detect stale statements contradicting actual architecture)
+check_claude_md_consistency() {
+  local claude_f=""
+  for f in "$PROJECT_DIR/CLAUDE.md" "$PROJECT_DIR/.claude/CLAUDE.md"; do
+    [ -f "$f" ] && claude_f="$f" && break
+  done
+  [ -n "$claude_f" ] || return 0
+
+  local issues=0
+
+  # Check: says "no separate detail layer" or "self-contained" about rules, but subdirectory CLAUDE.md files exist
+  local has_subdir_claude=0
+  while IFS= read -r f; do
+    local rel="${f#"$PROJECT_DIR/"}"
+    case "$rel" in
+      CLAUDE.md|.claude/CLAUDE.md|node_modules/*) continue ;;
+    esac
+    has_subdir_claude=1
+    break
+  done < <(find "$PROJECT_DIR" -name "CLAUDE.md" -not -path "*/node_modules/*" 2>/dev/null)
+
+  if [ "$has_subdir_claude" -eq 1 ]; then
+    if grep -qi 'no separate detail layer\|rules are self.contained\|no.*subdirectory.*claude' "$claude_f" 2>/dev/null; then
+      warn "CLAUDE.md consistency: states rules are self-contained/no detail layer, but subdirectory CLAUDE.md files exist — update to reflect two-artifact architecture"
+      issues=$((issues + 1))
+    fi
+  fi
+
+  # Check: references non-existent skill/agent files
+  local agents_mentioned; agents_mentioned=$(grep -oP '\.claude/agents/[^\s"]+\.md' "$claude_f" 2>/dev/null || true)
+  for ref in $agents_mentioned; do
+    if [ ! -f "$PROJECT_DIR/$ref" ]; then
+      warn "CLAUDE.md consistency: references $ref but file does not exist"
+      issues=$((issues + 1))
+    fi
+  done
+
+  if [ "$issues" -eq 0 ] && [ "$has_subdir_claude" -eq 1 ]; then
+    pass "CLAUDE.md consistency: no contradictions detected"
+  fi
+}
+
+# 13. Duplicate detection
 check_duplicates() {
   local d="$PROJECT_DIR/.claude/rules"
   if [ ! -d "$d" ]; then return 0; fi
@@ -371,6 +459,8 @@ check_rule_paths
 check_rule_body_length
 check_always_on_rules
 check_rule_overlap
+check_subdir_claude_md
+check_claude_md_consistency
 check_skill_frontmatter
 check_skill_context
 check_agents

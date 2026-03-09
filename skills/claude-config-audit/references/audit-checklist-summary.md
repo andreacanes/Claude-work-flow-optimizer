@@ -22,14 +22,17 @@ Use this quick reference to determine where configuration belongs:
 - Rule body exceeding 15 lines → needs two-artifact pattern (≤ 10 line rule + subdirectory CLAUDE.md)
 - Rule body exceeding 50 lines → CRITICAL: must extract to subdirectory CLAUDE.md immediately
 - Rule consolidation without extraction → merged rule is just as expensive as separate rules; the rule file MUST shrink
-- 10+ rules firing simultaneously on one directory → context overload, consolidate + extract
 - 5000+ estimated rule tokens on a single directory → critical context budget violation
+- 15+ rules firing simultaneously on one directory → consolidate (but token budget is the real constraint, not count)
+- Rule with `paths: src/**` or similar broad glob → functionally always-on, consider moving to CLAUDE.md or narrowing the glob
 - Skill doing simple convention enforcement → should be a rule
 - Agent that doesn't need isolation → should be inline or a skill
 - MCP replaceable by a bash script → should be a skill script
 - `@import` of large files in CLAUDE.md → use skill `context:` instead
 - Duplicated content across CLAUDE.md and subdirectory files → consolidate
 - Subdirectory CLAUDE.md that contradicts root without clear specialization intent → resolve conflict
+- Subdirectory CLAUDE.md exceeding 300 lines → probably too dense, focus on what matters when working there
+- CLAUDE.md states "rules are self-contained" or "no detail layer" but subdirectory CLAUDE.md files exist → stale description, update to reflect actual architecture
 
 ## Context Budget Targets
 
@@ -37,8 +40,9 @@ Use this quick reference to determine where configuration belongs:
 - Each rule body: ≤ 10 lines (every line costs tokens on every matched turn)
 - Skill descriptions: 1-2 sentences (loaded into context even when not invoked)
 - Skill body + references: loaded only on invocation, can be longer
-- Max rules firing simultaneously on any directory: ≤ 10
-- Max estimated tokens from rules on any directory: ≤ 5,000
+- Max estimated tokens from rules on any directory: ≤ 5,000 (primary constraint)
+- Max rules firing simultaneously on any directory: ≤ 15 (secondary — high count with low tokens is acceptable)
+- Subdirectory CLAUDE.md: ≤ 300 lines (focused on that directory's needs)
 
 ## Structural Lint Checklist (Quick Lint Mode)
 
@@ -52,8 +56,11 @@ Used when user says "quick check", "validate config", "lint my config".
 | Rule path resolution | Every `paths:` glob matches at least one file |
 | Rule body length | No rule body exceeds 50 lines ([FAIL]) or 15 lines ([WARN]) |
 | Always-on rules | Rules without `paths:` flagged; total body < 30 lines |
-| Rule overlap | No directory has 10+ rules firing simultaneously |
-| Context budget | Estimated rule tokens < 5,000 on any directory |
+| Broad-glob rules | Rules with `src/**` or similar broad globs flagged as functionally always-on |
+| Context budget | Estimated rule tokens < 5,000 on any directory (primary overlap metric) |
+| Rule overlap count | WARN if > 15 rules fire simultaneously (secondary — tokens matter more) |
+| Subdirectory CLAUDE.md size | No subdirectory CLAUDE.md exceeds 300 lines |
+| CLAUDE.md consistency | Root CLAUDE.md doesn't contradict actual architecture (e.g., "no detail layer" when subdirectory CLAUDE.md exists) |
 | Skill frontmatter | All `.claude/skills/*/SKILL.md` files have valid YAML frontmatter |
 | Skill context resolution | Every `context:` reference resolves to an existing file |
 | Agent skill preloads | Every `skills:` entry maps to an existing `.claude/skills/` directory |
@@ -122,6 +129,26 @@ This rule fires every single turn regardless of what file is being edited. Ask:
 - Does this apply to ALL files? → Move content to CLAUDE.md
 - Does this apply to specific files? → Add `paths:` frontmatter
 - Is this a skill trigger? → Keep as always-on but minimize body (< 5 lines)
+
+### Broad-Glob Rule (paths: src/**)
+
+Rules with `src/**/*.ts` or similar broad globs fire on every TypeScript file — functionally always-on without being flagged as "no paths:". Ask:
+
+- Is this truly cross-cutting? (e.g., import ordering, naming conventions) → Consider moving to root CLAUDE.md since it applies everywhere anyway
+- Can the glob be narrowed? (e.g., `src/modules/**/*.ts` instead of `src/**/*.ts`)
+- Is the body short enough (<10 lines) that the cost is acceptable? → May be fine as-is with a note
+
+### Oversized Subdirectory CLAUDE.md (>300 lines)
+
+Subdirectory CLAUDE.md should be focused context for that directory, not an encyclopedia. If it exceeds 300 lines:
+
+1. Split by concern: keep the architecture/patterns in CLAUDE.md, move reference tables or templates into skill `references/` or separate files
+2. Remove duplication: check if content overlaps with root CLAUDE.md or rules
+3. Ask: would someone working in this directory actually need ALL of this? Cut what they wouldn't
+
+### CLAUDE.md Consistency (contradicts actual architecture)
+
+After restructuring config (e.g., adding subdirectory CLAUDE.md files), the root CLAUDE.md may contain stale statements like "rules are self-contained" or "no separate detail layer." These contradict the new two-artifact architecture and confuse future sessions. Fix: update the PROJECT RULES section to accurately describe the current architecture.
 
 ### Missing Config Maintenance Section
 
