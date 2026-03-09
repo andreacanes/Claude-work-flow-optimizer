@@ -61,7 +61,8 @@ Compare `./audit/conventions-found.md` against `.claude/rules/`:
 - For every convention found in actual code, is there a rule enforcing it?
 - For every file type or directory pattern, would a path-scoped rule help?
 - Prioritize rules where conventions are subtle or easy to break
-- **Flag overloaded rules:** any rule with body >15 lines should probably be a subdirectory CLAUDE.md instead (rules are always-on for matching paths; dense content belongs in lazy-loaded subdirectory CLAUDE.md)
+- **Flag overloaded rules:** any rule with body >15 lines needs the **two-artifact pattern**: extract the dense content to a subdirectory CLAUDE.md (lazy-loaded), reduce the rule to a ≤ 10 line summary with a pointer to the CLAUDE.md. A 200-line merged rule is NOT an improvement over 5 × 40-line rules — same token cost, harder to maintain. The rule file MUST shrink.
+- **Check for merge-without-extract:** if rules were recently consolidated (fewer files than before), verify the merged rules actually shrank. Concatenation without extraction is the most common failure mode.
 
 Consider rules for: component structure, naming conventions, import organization, error handling per layer, testing conventions, styling methodology, accessibility patterns, performance patterns.
 

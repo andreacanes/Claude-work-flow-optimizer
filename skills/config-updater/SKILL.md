@@ -28,8 +28,9 @@ allowed-tools:
 3. For each changed area, check:
 
 **New directory or module?**
-- Does it need a **rule** with path globs? → Yes when: short convention (5-10 lines), enforcement-style ("always use X"), applies to a glob pattern
+- Does it need a **rule** with path globs? → Yes when: short convention (≤ 10 lines), enforcement-style ("always use X"), applies to a glob pattern
 - Does it need a **subdirectory CLAUDE.md**? → Yes when: dense context (50+ lines), domain-specific knowledge (API patterns, auth flows, framework architecture), only relevant when working in that directory
+- Does it need **both**? → Yes when: there's a critical constraint (rule, ≤ 10 lines) AND dense supporting context (CLAUDE.md, 50+ lines). The rule is the short pointer, the CLAUDE.md is the full guide. This is the **two-artifact pattern** — the most common correct answer for non-trivial directories.
 - Does it need **neither**? → When the convention is already covered by root CLAUDE.md or an existing rule
 
 **New pattern established?**

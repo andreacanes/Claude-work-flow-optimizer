@@ -45,3 +45,10 @@ This project IS a plugin — files live at `skills/`, `agents/`, `rules/`, `comm
 - Total always-on context cost: ~63 tokens/turn
 - `config-updater` uses `.claude/.cwfo-last-update` watermark in target projects
 - Run `bash scripts/lint.sh .` against any project for fast structural validation
+
+## Release Process
+
+- **MUST bump version in BOTH** `.claude-plugin/plugin.json` AND `.claude-plugin/marketplace.json`
+- Plugin auto-update only pulls the marketplace index on new session starts — version bumps during an active session won't be seen until the next session
+- After pushing a version bump, verify the marketplace clone at `~/.claude/plugins/marketplaces/` has the correct version. If stale, `git pull` manually in that directory
+- The installed version in `~/.claude/plugins/installed_plugins.json` updates when Claude Code detects a version mismatch between marketplace and cache on session start

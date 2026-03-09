@@ -45,18 +45,24 @@ This section is the self-preservation mechanism. Claude reads CLAUDE.md every se
 ## 3c. Generate Rules
 
 For each approved rule:
-- Use naming convention: `{domain}-{convention}.md`
+- Use naming convention: `{domain}.md` (one rule per domain, not per convention)
 - Include appropriate `paths:` glob in frontmatter
-- Keep body to ~5-10 lines
+- **Rule body MUST be ≤ 10 lines.** Rules are always-on for every matching file read — every line costs tokens every turn. If you have more than 10 lines of guidance for a domain, use the **two-artifact pattern** (3c + 3d together).
 - Before writing, verify the `paths:` glob resolves to actual files using the `Glob` tool (not `find`, which uses different glob semantics than Claude Code's `paths:` format). If zero matches, warn the user and adjust the glob.
 
 ## 3d. Generate Subdirectory CLAUDE.md (when appropriate)
 
-When investigation agents identify directories with dense, distinct context needs (50+ lines of domain-specific knowledge), generate subdirectory CLAUDE.md files instead of rules. Criteria:
+Most non-trivial directories need the **two-artifact pattern**: a short rule (≤ 10 lines, always-on pointer) paired with a subdirectory CLAUDE.md (50-300 lines, lazy-loaded full guide). This is the most common correct answer — not one or the other, but BOTH working together.
 
-- **Use subdirectory CLAUDE.md when:** the directory has domain-specific knowledge (API patterns, auth flows, framework architecture), the guidance is 50+ lines, and it only matters when working in that directory
-- **Use a rule instead when:** the convention is short (5-10 lines), enforcement-style ("always use X"), and applies to a glob pattern
-- **Use neither when:** the convention is already covered by root CLAUDE.md or an existing rule
+**Two-artifact pattern:**
+1. `.claude/rules/{domain}.md` — ≤ 10 lines: the 2-3 constraints that break things if violated + a pointer line: `Full patterns: see src/{dir}/CLAUDE.md`
+2. `src/{dir}/CLAUDE.md` — 50-300 lines: full domain knowledge, examples, patterns, templates. Only loads when Claude works in that directory.
+
+**Use rule only (no CLAUDE.md) when:** the total guidance fits in ≤ 10 lines
+**Use CLAUDE.md only (no rule) when:** there are no critical "break if violated" constraints, just reference material
+**Use neither when:** the convention is already covered by root CLAUDE.md or an existing rule
+
+**Common mistake:** Merging multiple rules into one large rule without extracting to CLAUDE.md. A 200-line merged rule has the same token cost as the original 5 separate rules. The point of consolidation is to REDUCE always-on cost by moving content to lazy-loaded CLAUDE.md, not just to reduce file count.
 
 If a subdirectory CLAUDE.md contradicts root CLAUDE.md, the subdirectory instruction wins for files in that directory. Keep root CLAUDE.md general and let subdirectories specialize. Never duplicate root content in subdirectories.
 
