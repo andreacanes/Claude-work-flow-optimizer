@@ -20,7 +20,7 @@ Check for plan content in the conversation first — Claude Code loads active pl
 Otherwise, find the most recently modified plan file across both project and user directories:
 
 ```bash
-ls -t .claude/plans/*.md ~/.claude/plans/*.md 2>/dev/null | head -1
+ls -t .claude/plans/*.md "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/plans/*.md 2>/dev/null | head -1
 ```
 
 If no plans exist, ask the user which file to review.
