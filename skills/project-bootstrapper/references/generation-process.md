@@ -5,7 +5,7 @@ Only generate what the user approved in Phase 2.
 ## 3a. Create directory structure
 
 ```bash
-mkdir -p .claude/rules .claude/skills .claude/agents
+mkdir -p .claude/rules .claude/skills .claude/agents .claude/scripts
 ```
 
 ## 3b. Generate CLAUDE.md
@@ -94,3 +94,51 @@ Delete the audit directory:
 ```bash
 rm -rf ./audit
 ```
+
+## 3i. Plan Review Enforcement
+
+Generate the hard enforcement hook so plan review survives even without CWFO installed.
+
+**1. Create `.claude/scripts/plan-review-gate.sh`:**
+
+```bash
+#!/bin/bash
+INPUT=$(cat /dev/stdin)
+PLAN_FILE=$(ls -t .claude/plans/*.md 2>/dev/null | head -1)
+[ -z "$PLAN_FILE" ] && exit 0
+grep -q "## Review: Complete" "$PLAN_FILE" && exit 0
+cat <<'HOOK'
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "Plan not reviewed. Run /cwfo:review first."
+  }
+}
+HOOK
+exit 0
+```
+
+**2. Create or merge `.claude/settings.local.json`:**
+
+If the file does not exist, create it with:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/scripts/plan-review-gate.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+If `.claude/settings.local.json` already exists, merge the `ExitPlanMode` entry into the existing `hooks.PreToolUse` array. Do not overwrite other hook entries.

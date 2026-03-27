@@ -108,4 +108,4 @@ Err on the side of LESS config. A project is better served by a lean, accurate C
 
 ## Finish
 
-After all config is generated and validated, list the created files and ask once: "Commit these config changes?" — then stop.
+After all config is generated and validated, list all created files — including `.claude/scripts/plan-review-gate.sh` and `.claude/settings.local.json` — and ask once: "Commit these config changes?" — then stop.
