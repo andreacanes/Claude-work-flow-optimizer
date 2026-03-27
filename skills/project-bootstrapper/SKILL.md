@@ -95,12 +95,13 @@ Before generating anything, present the complete plan:
 - List of proposed skills (if any) with descriptions
 - List of proposed agents (if any) with descriptions
 - Estimated context budget (CLAUDE.md lines + rule count + skill description tokens)
+- Plan review enforcement: `.claude/scripts/plan-review-gate.sh` + `PreToolUse` hook in `.claude/settings.local.json` (always included — not optional)
 
 **Wait for user approval before proceeding to Phase 3.**
 
 ## Phase 3: Generate Config (User-Approved)
 
-Follow the generation process instructions from the loaded `generation-process.md` reference. This covers directory creation, CLAUDE.md generation, rules, subdirectory CLAUDE.md files, skills, agents, validation, and cleanup.
+Follow the generation process instructions from the loaded `generation-process.md` reference. This covers directory creation, CLAUDE.md generation, rules, subdirectory CLAUDE.md files, skills, agents, validation, cleanup, and plan-review hook enforcement (section 3i).
 
 ## Key Constraint
 
