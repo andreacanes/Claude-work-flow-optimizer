@@ -46,14 +46,20 @@ Read all four audit files. Then evaluate each system against best-practice refer
 
 ### CLAUDE.md Assessment
 
-**Root CLAUDE.md is a routing table, not a knowledge store.** Every section must pass: "Does Claude need this on EVERY turn, regardless of what files it's touching?" If no, it belongs in a subdirectory CLAUDE.md, rule, or skill instead.
+**Root CLAUDE.md is a routing table, not a knowledge store.** Compare it against the target template in `restructure-operations.md`. The only sections allowed are: project identity (1-2 sentences), tech stack (names + versions table, no descriptions, max ~10 rows), project structure (directory tree), key rules (2-5 lines, each 1 constraint + pointer), build order (phase names only), status (1 line), skill inventory (table), config maintenance (5 lines).
 
-Compare `./audit/codebase-map.md` against root CLAUDE.md:
-- Does it accurately describe the tech stack (names + versions, not usage patterns)?
-- Does it have a project structure section (directory tree with 1-line descriptions)?
-- Does it have a skill/agent inventory that matches what exists?
-- Does it include a **Config Maintenance section**? If missing → HIGH PRIORITY gap.
-- **Flag any section that is path-specific** — conventions for specific directories, authoring guides for specific artifact types, detailed architecture, multi-step workflows, reference data. These must be extracted regardless of line count.
+Flag every section that violates these **mandatory extraction rules** (pattern match, not judgment):
+- Tech stack table with descriptions/details column → EXISTS BUT WRONG
+- Feature/scope lists that repeat a dedicated doc → UNNECESSARY
+- External doc references with stale/caveat warnings → UNNECESSARY (delete) or EXISTS BUT WRONG (trim to 1 line)
+- Key Rules subsections with multi-sentence descriptions → EXISTS BUT WRONG (collapse to 1 line + pointer)
+- Planning/status content beyond 1 line → EXISTS BUT WRONG
+- Decision history / architecture reflections → UNNECESSARY (belongs in git, not CLAUDE.md)
+- Build order with parenthetical descriptions → EXISTS BUT WRONG (phase names only)
+- Methodology sections ("How X Works") → EXISTS BUT WRONG (replace with 1-line pointer)
+- Anti-pattern summaries that restate a rule → UNNECESSARY (1-line pointer to rule)
+- Any section with >5 bullet points → EXISTS BUT WRONG (too detailed for root)
+- Missing Config Maintenance section → MISSING — HIGH PRIORITY
 
 Also evaluate subdirectory CLAUDE.md needs:
 - Are there directories with dense domain logic but no CLAUDE.md and no rule?
@@ -120,7 +126,7 @@ Map every finding to an operation type:
 
 | Category | Meaning |
 |---|---|
-| SHRINK | CLAUDE.md over 200 lines — sections need extraction |
+| SHRINK | CLAUDE.md has content that doesn't match the skeleton template |
 | EXTRACT | Rule body over 10 lines — needs two-artifact split |
 | DEDUPLICATE | Same concept in 2+ locations with different wording |
 | CONSOLIDATE | Decision history / reflection chains to collapse |
@@ -132,7 +138,7 @@ Use the loaded `restructure-operations.md` reference for detailed algorithms per
 ### Step 2 — Build restructure plan
 
 For each finding, design the concrete fix:
-- **SHRINK:** For each CLAUDE.md section, ask: "Is this needed every turn regardless of what files Claude is touching?" Tag as SKELETON (yes) or CANDIDATE (no). Skeleton = project identity, tech stack list, directory tree, skill inventory, config maintenance. Anything path-specific, detailed, or workflow-oriented is an extraction candidate regardless of length.
+- **SHRINK:** Apply the mandatory extraction rules from `restructure-operations.md`. Compare each section against the target template. Every pattern match is an extraction — not a judgment call. The resulting CLAUDE.md should be 60-80 lines matching the skeleton template: identity, tech stack (names+versions only), directory tree, key rules (2-5 lines with pointers), build order (phase names only), status (1 line), skill table, config maintenance.
 - **EXTRACT:** Draft the two-artifact split — 10-line rule summary + subdirectory CLAUDE.md. Check if subdirectory CLAUDE.md already exists (merge, don't duplicate).
 - **DEDUPLICATE:** Pick canonical location per the algorithm in restructure-operations.md, plan deletions/pointer replacements.
 - **CONSOLIDATE:** Read all versions chronologically, extract only final-state decisions.

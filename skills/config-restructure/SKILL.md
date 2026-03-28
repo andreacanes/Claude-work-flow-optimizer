@@ -46,7 +46,7 @@ Build a **problem list** — categorize each finding:
 
 | Category | Meaning |
 |---|---|
-| SHRINK | CLAUDE.md over 200 lines — sections need extraction |
+| SHRINK | CLAUDE.md has content that doesn't match the skeleton template |
 | EXTRACT | Rule body over 10 lines — needs two-artifact split |
 | DEDUPLICATE | Same concept in 2+ locations with different wording |
 | CONSOLIDATE | Decision history / reflection chains to collapse |
@@ -57,7 +57,7 @@ Build a **problem list** — categorize each finding:
 
 For each problem, design the concrete fix using the operations catalog in `restructure-operations.md`.
 
-**For SHRINK:** Tag each CLAUDE.md section as SKELETON (stays) or CANDIDATE (moves out). Use the "keep the skeleton" list from the operations catalog.
+**For SHRINK:** Apply the mandatory extraction rules from `restructure-operations.md`. Compare each section against the target template. Every pattern match is an extraction, not a judgment call. Result should be 60-80 lines matching the skeleton: identity, tech stack (names+versions only), directory tree, key rules (2-5 lines with pointers), build order (phase names only), status (1 line), skill table, config maintenance.
 
 **For EXTRACT:** Draft the two-artifact split — what becomes the 10-line rule summary, what moves to the subdirectory CLAUDE.md. Check if a subdirectory CLAUDE.md already exists (merge, don't create a second one).
 
