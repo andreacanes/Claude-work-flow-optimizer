@@ -6,33 +6,37 @@ Every finding maps to exactly one operation. Apply them in the order listed (dep
 
 ---
 
-## 1. SHRINK — Reduce Oversized CLAUDE.md
+## 1. SHRINK — Root CLAUDE.md is a Routing Table
 
-**Trigger:** CLAUDE.md exceeds 200 lines.
+**Trigger:** CLAUDE.md exceeds 200 lines, OR contains path-specific content regardless of length.
 
-**Strategy — "Keep the Skeleton"**
+**Core principle: Root CLAUDE.md is a routing table, not a knowledge store.** Every section must pass this test: "Does Claude need this on EVERY turn, regardless of what files it's touching?" If the answer is no, the content belongs closer to where it's relevant — in a subdirectory CLAUDE.md, a rule with `paths:`, or a skill.
 
-These sections belong in root CLAUDE.md (the skeleton):
+**What belongs in root CLAUDE.md (the skeleton):**
 - Project identity (1-2 sentences: what this is)
-- Tech stack (table or short list)
-- Project structure (directory tree, ~10-20 lines)
-- Development workflow (how to run, build, test, deploy)
-- Quality bar (key conventions, anti-patterns — 10-15 lines max)
+- Tech stack (short list — names and versions, not usage patterns)
+- Project structure (directory tree with 1-line descriptions, ~10-20 lines)
 - Skill/agent inventory (table with name + one-line purpose)
 - Config Maintenance section (mandatory, ~5 lines)
 
-Everything else is an **extraction candidate**:
-- Detailed architecture decisions → subdirectory CLAUDE.md or dedicated rule
-- Domain-specific conventions → rules with `paths:` globs
-- Multi-step workflows → skills
+**What does NOT belong — extract regardless of length:**
+- Conventions for specific file types or directories → subdirectory CLAUDE.md or rule with `paths:`
+- Authoring guidelines for specific artifact types (e.g., "how to write a skill", "how to write a rule") → subdirectory CLAUDE.md in the directory those artifacts live
+- Detailed architecture decisions → subdirectory CLAUDE.md
+- Multi-step workflows (build, deploy, release) → skills or subdirectory CLAUDE.md in `scripts/`
 - Reference data (tables, mappings, tier lists) → subdirectory CLAUDE.md in the relevant directory
 - Planning/status content → separate planning docs (not CLAUDE.md)
 
 **Process:**
-1. Read full CLAUDE.md and tag each section as SKELETON or CANDIDATE
-2. For each CANDIDATE, determine destination (rule, subdirectory CLAUDE.md, skill, or delete)
-3. Move content out, replace with 1-line pointer if needed
-4. Target: CLAUDE.md under 150 lines (buffer below the 200-line hard limit)
+1. Read full CLAUDE.md. For each section, ask: "Is this needed on every turn regardless of which files Claude is touching?"
+2. Tag each section as SKELETON (yes) or CANDIDATE (no)
+3. For each CANDIDATE, determine destination:
+   - Content about files in a specific directory → subdirectory CLAUDE.md there
+   - Short enforcement constraint → rule with `paths:`
+   - Multi-step process → skill
+   - Stale/superseded → delete
+4. Move content out. In root CLAUDE.md, either delete the section or leave a 1-line pointer only if discovery matters (e.g., "Skill authoring conventions: see `skills/CLAUDE.md`")
+5. Target: root CLAUDE.md under 150 lines (buffer below the 200-line hard limit), but line count is secondary — the routing-table principle is what matters
 
 ---
 

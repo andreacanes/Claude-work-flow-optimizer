@@ -46,16 +46,17 @@ Read all four audit files. Then evaluate each system against best-practice refer
 
 ### CLAUDE.md Assessment
 
+**Root CLAUDE.md is a routing table, not a knowledge store.** Every section must pass: "Does Claude need this on EVERY turn, regardless of what files it's touching?" If no, it belongs in a subdirectory CLAUDE.md, rule, or skill instead.
+
 Compare `./audit/codebase-map.md` against root CLAUDE.md:
-- Does CLAUDE.md accurately describe the tech stack as it actually exists?
-- Does it describe the actual project structure or an outdated one?
-- Does it mention the actual workflow from `./audit/workflows-found.md`?
-- Is there a skill inventory that matches what exists in `.claude/skills/`?
-- For each major directory cluster: does this area have enough guidance?
-- Does CLAUDE.md include a **Config Maintenance section** (decision framework for when to update config)? If missing, this is a HIGH PRIORITY gap — without it, the project's config will drift silently. The section should teach Claude when to create rules, update CLAUDE.md, or add skills.
+- Does it accurately describe the tech stack (names + versions, not usage patterns)?
+- Does it have a project structure section (directory tree with 1-line descriptions)?
+- Does it have a skill/agent inventory that matches what exists?
+- Does it include a **Config Maintenance section**? If missing → HIGH PRIORITY gap.
+- **Flag any section that is path-specific** — conventions for specific directories, authoring guides for specific artifact types, detailed architecture, multi-step workflows, reference data. These must be extracted regardless of line count.
 
 Also evaluate subdirectory CLAUDE.md needs:
-- Are there directories with dense domain logic (API patterns, auth flows, framework architecture) but no CLAUDE.md and no rule?
+- Are there directories with dense domain logic but no CLAUDE.md and no rule?
 - Are there directories where 50+ lines of context would only matter when working there? → Subdirectory CLAUDE.md candidate
 - Do existing subdirectory CLAUDE.md files duplicate root CLAUDE.md content? → Flag for consolidation
 
@@ -131,7 +132,7 @@ Use the loaded `restructure-operations.md` reference for detailed algorithms per
 ### Step 2 — Build restructure plan
 
 For each finding, design the concrete fix:
-- **SHRINK:** Tag each CLAUDE.md section as SKELETON (stays) or CANDIDATE (moves out). Skeleton = project identity, tech stack, structure, workflow, quality bar, skill inventory, config maintenance. Everything else is extraction candidate.
+- **SHRINK:** For each CLAUDE.md section, ask: "Is this needed every turn regardless of what files Claude is touching?" Tag as SKELETON (yes) or CANDIDATE (no). Skeleton = project identity, tech stack list, directory tree, skill inventory, config maintenance. Anything path-specific, detailed, or workflow-oriented is an extraction candidate regardless of length.
 - **EXTRACT:** Draft the two-artifact split — 10-line rule summary + subdirectory CLAUDE.md. Check if subdirectory CLAUDE.md already exists (merge, don't duplicate).
 - **DEDUPLICATE:** Pick canonical location per the algorithm in restructure-operations.md, plan deletions/pointer replacements.
 - **CONSOLIDATE:** Read all versions chronologically, extract only final-state decisions.
