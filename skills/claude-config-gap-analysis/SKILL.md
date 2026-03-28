@@ -103,6 +103,8 @@ For each of the 4 main systems (CLAUDE.md, Rules, Skills, Agents):
 
 End with a **concrete action plan**: ordered list of specific files to create or modify, with a one-line description of what each should contain. Order by impact.
 
+If structural problems were found (oversized CLAUDE.md, overloaded rules >15 lines, duplicated content, decision history bloat), recommend: **"Run `/cwfo:restructure` to apply these structural fixes."**
+
 ## Cleanup
 
 Delete `./audit/` directory when analysis is complete:

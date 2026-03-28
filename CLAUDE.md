@@ -11,7 +11,7 @@ Private Claude Code plugin for auditing, generating, and maintaining Claude Code
 ## Project Structure
 
 - `.claude-plugin/plugin.json` — Plugin manifest (namespace: `cwfo`)
-- `skills/` — 5 skills, each with `SKILL.md` + optional `references/` subdirectory
+- `skills/` — 6 skills, each with `SKILL.md` + optional `references/` subdirectory
 - `skills/shared-references/` — Context files loaded by multiple skills via `context:` frontmatter
 - `agents/` — 4 investigation agents (used by gap-analysis & bootstrapper)
 - `rules/` — 2 rules: config-awareness (always-on), plan-review (plan files only)
@@ -39,6 +39,7 @@ This project IS a plugin — files live at `skills/`, `agents/`, `rules/`, `comm
 - `updater` (`/cwfo:updater`) — Detect code changes and propose config updates; auto-triggers on "save this as a rule"
 - `review` (`/cwfo:review`) — Interactive plan review with 4 sections, BIG/SMALL modes
 - `bootstrap` (`/cwfo:bootstrap`) — Generate initial config from scratch: investigate, design, generate
+- `restructure` (`/cwfo:restructure`) — Fix structural config problems: shrink oversized CLAUDE.md, extract overloaded rules, de-duplicate, consolidate decision history
 
 ## Development Notes
 
