@@ -107,11 +107,86 @@ For each of the 4 main systems (CLAUDE.md, Rules, Skills, Agents):
 
 End with a **concrete action plan**: ordered list of specific files to create or modify, with a one-line description of what each should contain. Order by impact.
 
-If structural problems were found (oversized CLAUDE.md, overloaded rules >15 lines, duplicated content, decision history bloat), **immediately proceed to apply the config-restructure skill** after presenting the gap-analysis report. Do NOT ask the user to invoke it separately — chain directly into restructure Phase 0 using the findings you just produced. The restructure skill has its own approval gate (Phase 2) so the user still controls what gets changed.
+Then proceed directly to Phase 3.
+
+## Phase 3: Apply Fixes
+
+**Do NOT stop after the report. Do NOT ask the user to run a separate command. Fix the problems you just found.**
+
+### Step 1 — Categorize findings from Phase 2
+
+Map every finding to an operation type:
+
+| Category | Meaning |
+|---|---|
+| SHRINK | CLAUDE.md over 200 lines — sections need extraction |
+| EXTRACT | Rule body over 10 lines — needs two-artifact split |
+| DEDUPLICATE | Same concept in 2+ locations with different wording |
+| CONSOLIDATE | Decision history / reflection chains to collapse |
+| REORGANIZE | Monolithic section (30+ bullets) to split by theme |
+| DELETE | Stale content (dead references, superseded decisions) |
+
+Use the loaded `restructure-operations.md` reference for detailed algorithms per operation type. Use `consolidation-patterns.md` for collapsing decision history.
+
+### Step 2 — Build restructure plan
+
+For each finding, design the concrete fix:
+- **SHRINK:** Tag each CLAUDE.md section as SKELETON (stays) or CANDIDATE (moves out). Skeleton = project identity, tech stack, structure, workflow, quality bar, skill inventory, config maintenance. Everything else is extraction candidate.
+- **EXTRACT:** Draft the two-artifact split — 10-line rule summary + subdirectory CLAUDE.md. Check if subdirectory CLAUDE.md already exists (merge, don't duplicate).
+- **DEDUPLICATE:** Pick canonical location per the algorithm in restructure-operations.md, plan deletions/pointer replacements.
+- **CONSOLIDATE:** Read all versions chronologically, extract only final-state decisions.
+- **REORGANIZE:** Group bullets by theme, plan subsections of 5-15 items.
+- **DELETE:** Verify stale with git blame — recent additions (last 5 commits) get flagged, not auto-deleted.
+
+Estimate before/after line counts for every file.
+
+### Step 3 — Present plan and get approval (mandatory, blocking)
+
+Show a summary table:
+
+```
+File                          Current    Target    Operations
+─────────────────────────────────────────────────────────────
+CLAUDE.md                     365        142       SHRINK, CONSOLIDATE, REORGANIZE
+.claude/rules/anti-slop.md    53         10        EXTRACT
+src/lib/CLAUDE.md             131        155       EXTRACT target (absorbs rule content)
+```
+
+Group by risk:
+- **LOW** — Reorganize sections, add pointers, create new subdirectory CLAUDE.md
+- **MEDIUM** — Extract content from rules/CLAUDE.md to new locations, merge duplicates
+- **HIGH** — Delete sections, rewrite decision history, remove files
+
+For HIGH-risk operations, show before/after diffs. **No writes until user approves.**
+
+### Step 4 — Execute approved fixes
+
+Apply in dependency order:
+1. `mkdir -p` for new directories
+2. Create new subdirectory CLAUDE.md files (extraction targets must exist before rules shrink)
+3. Gut overloaded rules to 10-line summaries with pointers
+4. Rewrite root CLAUDE.md — remove extracted content, consolidate, ensure Config Maintenance section
+5. Delete approved stale content
+6. Update cross-references (broken `paths:` globs, pointers)
+
+### Step 5 — Validate and report
+
+Run lint checks: `wc -l` on CLAUDE.md (must be <200), rule bodies (<10 lines each), subdirectory CLAUDE.md (<300 lines each). Verify all `paths:` globs resolve.
+
+Report the delta:
+```
+Restructure complete.
+  CLAUDE.md:                    365 → 142 lines  (-61%)
+  Rules restructured:           3
+  Subdirectory CLAUDE.md created: 2
+  Lint result:                  all passing
+```
+
+List all modified/created files, then ask once: **"Commit these config changes?"**
 
 ## Cleanup
 
-Delete `./audit/` directory when analysis is complete:
+Delete `./audit/` directory after Phase 3 is complete:
 
 ```bash
 rm -rf ./audit
