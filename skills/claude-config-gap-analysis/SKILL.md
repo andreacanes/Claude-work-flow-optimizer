@@ -6,6 +6,8 @@ description: >
   "what config am I missing", or "analyze my project for claude config".
 allowed-tools:
   - Read
+  - Write
+  - Edit
   - Glob
   - Grep
   - Bash(git:*)
@@ -16,6 +18,8 @@ allowed-tools:
   - Agent
 context:
   - ../shared-references/investigation-phase.md
+  - ../config-restructure/references/restructure-operations.md
+  - ../config-restructure/references/consolidation-patterns.md
 ---
 
 ## Setup
@@ -103,7 +107,7 @@ For each of the 4 main systems (CLAUDE.md, Rules, Skills, Agents):
 
 End with a **concrete action plan**: ordered list of specific files to create or modify, with a one-line description of what each should contain. Order by impact.
 
-If structural problems were found (oversized CLAUDE.md, overloaded rules >15 lines, duplicated content, decision history bloat), recommend: **"Run `/cwfo:restructure` to apply these structural fixes."**
+If structural problems were found (oversized CLAUDE.md, overloaded rules >15 lines, duplicated content, decision history bloat), **immediately proceed to apply the config-restructure skill** after presenting the gap-analysis report. Do NOT ask the user to invoke it separately — chain directly into restructure Phase 0 using the findings you just produced. The restructure skill has its own approval gate (Phase 2) so the user still controls what gets changed.
 
 ## Cleanup
 
