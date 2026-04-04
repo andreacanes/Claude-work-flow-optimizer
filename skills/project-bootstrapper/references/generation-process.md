@@ -104,9 +104,9 @@ Generate the hard enforcement hook so plan review survives even without CWFO ins
 ```bash
 #!/bin/bash
 INPUT=$(cat /dev/stdin)
-PLAN_FILE=$(ls -t .claude/plans/*.md 2>/dev/null | head -1)
+PLAN_FILE=$(ls -t .claude/plans/*.md "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/plans/*.md 2>/dev/null | head -1)
 [ -z "$PLAN_FILE" ] && exit 0
-grep -q "## Review: Complete" "$PLAN_FILE" && exit 0
+grep -qx "## Review: Complete" "$PLAN_FILE" && exit 0
 cat <<'HOOK'
 {
   "hookSpecificOutput": {
